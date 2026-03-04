@@ -1,711 +1,328 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
-import { ArrowRight, ArrowUpRight, Shield, Zap, GitBranch, Check, Copy } from 'lucide-react'
-import { useState } from 'react'
-
-const API_DEMO = `{
-  "address": "0x742d35Cc...f2bD28",
-  "chain": "base",
-  "score": 8.47,
-  "risk_level": "trusted",
-  "verdict": "ALLOW",
-  "signals": {
-    "age_days": 812,
-    "tx_count": 1247,
-    "defi_activity": true,
-    "blacklisted": false,
-    "eas_attestations": 3
-  },
-  "latency_ms": 94
-}`
-
-const INTEGRATIONS = [
-  {
-    name: 'AgentKit',
-    desc: 'Coinbase AgentKit plugin — block untrusted swaps automatically',
-    color: '#0052FF',
-    logo: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="13" stroke="#0052FF" strokeWidth="2"/>
-        <path d="M9 14a5 5 0 0010 0H9z" fill="#0052FF"/>
-      </svg>
-    ),
-  },
-  {
-    name: 'MCP Server',
-    desc: 'Model Context Protocol — works with Claude, OpenClaw, any MCP host',
-    color: '#d4a017',
-    logo: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <rect x="4" y="4" width="8" height="8" rx="2" fill="#d4a017" opacity="0.8"/>
-        <rect x="16" y="4" width="8" height="8" rx="2" fill="#d4a017" opacity="0.5"/>
-        <rect x="4" y="16" width="8" height="8" rx="2" fill="#d4a017" opacity="0.5"/>
-        <rect x="16" y="16" width="8" height="8" rx="2" fill="#d4a017" opacity="0.3"/>
-      </svg>
-    ),
-  },
-  {
-    name: 'ElizaOS',
-    desc: 'ai16z ElizaOS plugin — context injection for agent reasoning',
-    color: '#7C3AED',
-    logo: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <path d="M14 3L25 9V19L14 25L3 19V9L14 3Z" stroke="#7C3AED" strokeWidth="2" fill="none"/>
-        <circle cx="14" cy="14" r="3" fill="#7C3AED"/>
-      </svg>
-    ),
-  },
-  {
-    name: 'Uniswap v4',
-    desc: 'TrustGateHook — on-chain trust enforcement before every swap',
-    color: '#FF007A',
-    logo: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <path d="M9 8c0 0 2-3 5-3s5 3 5 3" stroke="#FF007A" strokeWidth="2" strokeLinecap="round"/>
-        <circle cx="14" cy="16" r="6" stroke="#FF007A" strokeWidth="2"/>
-        <circle cx="14" cy="16" r="2" fill="#FF007A"/>
-      </svg>
-    ),
-  },
-]
-
-const STEPS = [
-  {
-    num: '01',
-    title: 'Query Any Address',
-    desc: 'One GET request. Pass any EVM address — wallet, contract, or agent. Works across 6 chains.',
-    color: 'var(--gold)',
-    bgColor: 'rgba(212,160,23,0.08)',
-  },
-  {
-    num: '02',
-    title: 'Score Is Computed',
-    desc: 'On-chain history, EAS attestations, blacklist checks, DeFi activity, and contract analysis — all in <120ms.',
-    color: 'var(--blue)',
-    bgColor: 'rgba(74,158,255,0.08)',
-  },
-  {
-    num: '03',
-    title: 'Protect & Gate',
-    desc: 'Our Uniswap v4 Hook blocks untrusted swaps. Your MCP plugin gates tool calls. Agents trade with confidence.',
-    color: 'var(--teal)',
-    bgColor: 'rgba(0,201,167,0.08)',
-  },
-]
-
-const STATS = [
-  { value: '847K+', label: 'Addresses scored', color: 'var(--text-primary)' },
-  { value: '<120ms', label: 'Avg latency', color: 'var(--teal)' },
-  { value: '6', label: 'Chains supported', color: 'var(--blue)' },
-  { value: '99.9%', label: 'API uptime', color: 'var(--gold)' },
-]
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-  const copy = async () => {
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-  return (
-    <button
-      onClick={copy}
-      className="flex items-center gap-1.5 transition-all px-2 py-1 rounded"
-      style={{
-        color: copied ? 'var(--teal)' : 'var(--text-muted)',
-        background: copied ? 'rgba(0,201,167,0.1)' : 'transparent',
-        fontSize: 12,
-        fontFamily: 'var(--font-mono)',
-      }}
-    >
-      {copied ? <Check size={12} /> : <Copy size={12} />}
-      {copied ? 'Copied' : 'Copy'}
-    </button>
-  )
-}
+import { motion } from 'motion/react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { Shield, Cpu, Database, ChevronRight, Terminal } from 'lucide-react';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 export default function HomePage() {
+  const [isAgent, setIsAgent] = useState(false);
+
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: 'var(--bg-base)', fontFamily: 'var(--font-sans)' }}>
+    <div className="flex flex-col min-h-screen bg-[#02040a]">
       <Header />
-
-      {/* ========== HERO ========== */}
-      <section
-        className="relative flex flex-col items-center justify-center min-h-screen pt-16 px-6 overflow-hidden"
-      >
-        {/* Grid background */}
-        <div
-          className="absolute inset-0 grid-bg opacity-30"
-          style={{ maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)' }}
+      <main className="grow relative overflow-hidden font-sans selection:bg-blue-500/30 text-white">
+      {/* Grid Background with central glow */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-[0.15]" 
+          style={{ 
+            backgroundImage: `linear-gradient(#2a3b5a 1px, transparent 1px), linear-gradient(90deg, #2a3b5a 1px, transparent 1px)`,
+            backgroundSize: '48px 48px'
+          }} 
         />
-
-        {/* Glow orbs */}
-        <div
-          className="glow-orb"
-          style={{
-            width: 600,
-            height: 600,
-            background: 'radial-gradient(circle, rgba(212,160,23,0.12) 0%, transparent 70%)',
-            top: '10%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-          }}
-        />
-        <div
-          className="glow-orb"
-          style={{
-            width: 300,
-            height: 300,
-            background: 'radial-gradient(circle, rgba(74,158,255,0.08) 0%, transparent 70%)',
-            bottom: '20%',
-            right: '15%',
-          }}
-        />
-
-        <div className="relative z-10 flex flex-col items-center gap-8 max-w-4xl text-center">
-          {/* Badge */}
-          <div
-            className="pill animate-fade-up"
-            style={{
-              border: '1px solid rgba(212,160,23,0.3)',
-              color: 'var(--gold)',
-              background: 'rgba(212,160,23,0.06)',
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--gold)', display: 'inline-block' }} />
-            Now live on Base Sepolia
-          </div>
-
-          {/* Headline */}
-          <h1
-            className="text-[52px] md:text-[76px] font-extrabold tracking-[-3px] leading-[0.95] animate-fade-up delay-1"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Trust infrastructure<br />
-            <span className="text-gold-gradient">for AI agents.</span>
-          </h1>
-
-          {/* Subline */}
-          <p
-            className="text-lg md:text-xl max-w-[560px] leading-[1.65] animate-fade-up delay-2"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Query any address. Get a trust score. Gate swaps, tool calls, and agent interactions — on-chain.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-3 animate-fade-up delay-3">
-            <Link href="https://maiat-protocol.vercel.app/explore" className="btn-primary">
-              Launch App
-              <ArrowRight size={16} />
-            </Link>
-            <Link href="https://maiat-protocol.vercel.app/docs" className="btn-secondary">
-              Read the Docs
-              <ArrowUpRight size={15} />
-            </Link>
-          </div>
-
-          {/* Inline API preview */}
-          <div
-            className="animate-fade-up delay-4 w-full max-w-xl rounded-xl overflow-hidden mt-2"
-            style={{
-              border: '1px solid var(--border-subtle)',
-              background: 'var(--bg-surface)',
-            }}
-          >
-            <div
-              className="flex items-center justify-between px-4 py-2.5"
-              style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}
-            >
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#f87171' }} />
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#fbbf24' }} />
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--teal)' }} />
-                <span className="font-mono text-[10px] ml-1 uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>terminal</span>
-              </div>
-              <CopyButton text="curl https://maiat-protocol.vercel.app/api/v1/score/0x742d35Cc6634C0532925a3b844Bc9e7595f2bD28" />
-            </div>
-            <div className="px-5 py-4 text-left">
-              <p className="font-mono text-[12px] leading-5" style={{ color: 'var(--teal)' }}>
-                $ curl https://maiat-protocol.vercel.app/api/v1/score/0x742d35Cc...
-              </p>
-              <div className="mt-3">
-                {API_DEMO.split('\n').map((line, i) => {
-                  const isScore = line.includes('"score"')
-                  const isVerdict = line.includes('"verdict"')
-                  const isKey = line.trim().startsWith('"') && line.includes(':')
-                  return (
-                    <p
-                      key={i}
-                      className="font-mono text-[12px] leading-[1.7]"
-                      style={{
-                        color: isScore
-                          ? 'var(--gold)'
-                          : isVerdict
-                          ? 'var(--teal)'
-                          : isKey
-                          ? 'var(--blue)'
-                          : 'var(--text-muted)',
-                      }}
-                    >
-                      {line}
-                    </p>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-up delay-6"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          <span className="font-mono text-[10px] uppercase tracking-widest">Scroll</span>
-          <div className="w-px h-8 bg-gradient-to-b from-transparent to-current opacity-40" />
-        </div>
-      </section>
-
-      {/* ========== STATS BAR ========== */}
-      <div
-        className="relative"
-        style={{ borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}
-      >
-        <div className="max-w-5xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-0">
-          {STATS.map((s, i) => (
-            <div
-              key={s.label}
-              className="flex flex-col items-center gap-1 py-4 md:py-0"
-              style={{
-                borderRight: i < 3 ? '1px solid var(--border-subtle)' : undefined,
-              }}
-            >
-              <span className="font-mono text-[28px] font-semibold tracking-tight" style={{ color: s.color }}>
-                {s.value}
-              </span>
-              <span className="text-xs" style={{ color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-                {s.label}
-              </span>
-            </div>
-          ))}
-        </div>
+        {/* Large central blue glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[800px] bg-blue-600/20 rounded-full blur-[160px] opacity-60" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-blue-400/10 rounded-full blur-[100px] opacity-40" />
       </div>
 
-      {/* ========== HOW IT WORKS ========== */}
-      <section className="relative py-28 px-6 overflow-hidden">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col items-center gap-4 mb-16">
-            <span className="section-label" style={{ color: 'var(--gold)' }}>How It Works</span>
-            <h2 className="text-4xl md:text-[48px] font-bold tracking-[-1.5px] text-center" style={{ color: 'var(--text-primary)' }}>
-              From query to protection<br />in milliseconds.
-            </h2>
-            <p className="text-base max-w-[480px] text-center leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Maiat sits between your agent and the blockchain, intercepting every interaction before it costs anything real.
-            </p>
-          </div>
+      <div className="relative z-10 container mx-auto px-6 pt-24 pb-40">
+        {/* Header Badge */}
+        
 
-          {/* Steps */}
-          <div className="flex flex-col md:flex-row gap-4">
-            {STEPS.map((step, i) => (
-              <div
-                key={step.num}
-                className="flex-1 relative rounded-2xl p-8 card-hover"
-                style={{ background: 'var(--bg-card)' }}
-              >
-                {/* Connector line */}
-                {i < STEPS.length - 1 && (
-                  <div
-                    className="hidden md:block absolute top-12 -right-2.5 w-5 h-px z-10"
-                    style={{ background: `linear-gradient(to right, ${step.color}, transparent)` }}
-                  />
-                )}
-
-                <div
-                  className="inline-flex items-center justify-center w-11 h-11 rounded-xl mb-6 font-mono font-bold text-sm"
-                  style={{ background: step.bgColor, color: step.color }}
-                >
-                  {step.num}
-                </div>
-
-                <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
-                  {step.title}
-                </h3>
-                <p className="text-[14px] leading-[1.7]" style={{ color: 'var(--text-secondary)' }}>
-                  {step.desc}
-                </p>
-
-                <div
-                  className="absolute top-0 left-0 right-0 h-px rounded-t-2xl"
-                  style={{ background: `linear-gradient(to right, transparent, ${step.color}40, transparent)` }}
-                />
-              </div>
-            ))}
-          </div>
+        {/* Hero Content */}
+        <div className="text-center max-w-5xl mx-auto mb-20">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1]"
+          >
+            The Trust Layer for <br />
+            <span className="bg-clip-text text-transparent bg-linear-to-b from-blue-300 via-blue-500 to-indigo-600">
+              Agentic Commerce
+            </span>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="text-lg md:text-xl text-slate-400/80 mb-12 leading-relaxed max-w-2xl mx-auto font-light"
+          >
+            On-chain behavioral trust oracle for AI agents. Powering verifiable reputation and autonomous security in the agent economy.
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap items-center justify-center gap-5"
+          >
+            <Link href="https://maiat-protocol.vercel.app/explore" className="px-10 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)] active:scale-95">
+              Launch App
+            </Link>
+            <Link href="https://maiat-protocol.vercel.app/docs" className="px-10 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 font-bold transition-all flex items-center gap-2 group active:scale-95">
+              <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" />
+              Read Docs
+            </Link>
+          </motion.div>
         </div>
-      </section>
 
-      {/* ========== INTEGRATIONS ========== */}
-      <section
-        className="py-28 px-6"
-        style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col items-center gap-4 mb-16">
-            <span className="section-label" style={{ color: 'var(--blue)' }}>Integrations</span>
-            <h2 className="text-4xl md:text-[48px] font-bold tracking-[-1.5px] text-center" style={{ color: 'var(--text-primary)' }}>
-              Plug into every agent<br />framework.
-            </h2>
-            <p className="text-base max-w-[460px] text-center leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              One npm install. Consistent behavior across every major agentic runtime.
-            </p>
+        {/* Central Widget - Glassmorphism Card */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-2xl mx-auto mb-32"
+        >
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-linear-to-r from-blue-500/20 to-indigo-500/20 rounded-4xl blur-xl opacity-50 group-hover:opacity-75 transition duration-1000"></div>
+            <div className="relative bg-[#0a101f]/60 backdrop-blur-2xl border border-white/10 rounded-4xl p-10 shadow-2xl overflow-hidden">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative w-40 h-40 mb-8">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r="72"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="transparent"
+                      className="text-slate-800/50"
+                    />
+                    <motion.circle
+                      initial={{ strokeDashoffset: 452.4 }}
+                      animate={{ strokeDashoffset: 452.4 * (1 - 0.98) }}
+                      transition={{ duration: 2, delay: 1, ease: "easeOut" }}
+                      cx="80"
+                      cy="80"
+                      r="72"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="transparent"
+                      strokeDasharray={452.4}
+                      className="text-[#00c9a7] drop-shadow-[0_0_8px_rgba(0,201,167,0.5)]"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-5xl font-bold text-white tracking-tighter">98</span>
+                    <span className="text-[9px] uppercase tracking-[0.3em] text-slate-500 font-bold mt-1">Trust Score</span>
+                  </div>
+                </div>
+                
+                <div className="mb-10">
+                  <h3 className="text-2xl font-mono tracking-[0.2em] text-slate-300 font-medium">VERDICT: <span className="text-[#00c9a7]">PROCEED</span></h3>
+                </div>
+
+                <div className="grid grid-cols-2 gap-12 w-full max-w-md px-4">
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-3">Compliance Score</div>
+                    <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: "92%" }}
+                        transition={{ duration: 1.5, delay: 1.2 }}
+                        className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                      />
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-2">Age</div>
+                    <div className="text-lg font-mono text-slate-300">42 weeks</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+          {[
+            {
+              icon: <Cpu className="w-5 h-5" />,
+              title: "ACP Seller Agent",
+              desc: "Standardised communication protocol for secure agentic commerce interactions."
+            },
+            {
+              icon: <Shield className="w-5 h-5" />,
+              title: "EAS Receipts",
+              desc: "Ethereum Attestation Service Integration for cryptographically verifiable delivery."
+            },
+            {
+              icon: <Database className="w-5 h-5" />,
+              title: "On-Chain Oracle",
+              desc: "Real-time behavioral scoring and dynamic trust verification smart contracts."
+            }
+          ].map((feature, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.1 }}
+              className="relative p-8 rounded-2xl bg-slate-900/30 border border-white/5 hover:border-blue-500/30 transition-all group overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-linear-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 border border-blue-500/20 text-blue-400 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all">
+                  {feature.icon}
+                </div>
+                <h4 className="text-xl font-bold mb-3 text-white">{feature.title}</h4>
+                <p className="text-slate-400 leading-relaxed font-light">{feature.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+
+        {/* Agent vs Human Toggle Section */}
+        <div className="max-w-4xl mx-auto mb-32 flex flex-col items-center">
+          <div className="flex bg-[#0f111a] p-1.5 rounded-xl border border-white/5 shadow-2xl mb-8 relative">
+            <motion.div 
+              className="absolute inset-y-1.5 w-[calc(50%-6px)] bg-[#1e293b] rounded-lg shadow-md z-0"
+              initial={false}
+              animate={{
+                left: isAgent ? 'calc(50% + 1.5px)' : '6px'
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            />
+            <button 
+              onClick={() => setIsAgent(false)}
+              className={`relative z-10 flex items-center gap-2 px-8 py-3 rounded-lg font-medium transition-colors ${!isAgent ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <span className="text-lg">👤</span> I&apos;m a Human
+            </button>
+            <button 
+              onClick={() => setIsAgent(true)}
+              className={`relative z-10 flex items-center gap-2 px-8 py-3 rounded-lg font-medium transition-colors ${isAgent ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <span className="text-lg">🤖</span> I&apos;m an Agent
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {INTEGRATIONS.map((item) => (
-              <div
-                key={item.name}
-                className="flex flex-col gap-4 rounded-2xl p-6 card-hover cursor-default"
-                style={{ background: 'var(--bg-card)' }}
+          <motion.div 
+            className="w-full relative"
+            animate={{ height: 'auto' }}
+          >
+            {/* Agent Terminal View */}
+            {isAgent ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full rounded-2xl border border-[#00c9a7]/30 bg-[#0d1117] p-8 shadow-[0_0_40px_rgba(0,201,167,0.15)] relative overflow-hidden"
               >
-                <div className="w-12 h-12 flex items-center justify-center">
-                  {item.logo}
-                </div>
-                <div>
-                  <h3 className="font-bold text-base mb-1" style={{ color: 'var(--text-primary)' }}>
-                    {item.name}
-                  </h3>
-                  <p className="text-[13px] leading-[1.6]" style={{ color: 'var(--text-muted)' }}>
-                    {item.desc}
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#00c9a7] to-transparent opacity-50" />
+                <h3 className="text-xl font-bold text-center mb-6 flex items-center justify-center gap-2">
+                  <span className="text-white">Initialize Maiat</span>
+                  <span className="text-xl">🪲</span>
+                </h3>
+                
+                <div className="bg-[#161b22] border border-white/5 rounded-xl p-6 mb-8">
+                  <p className="font-mono text-[#00c9a7] leading-relaxed">
+                    Read <a href="https://maiat-protocol.vercel.app/skill.md" className="underline decoration-[#00c9a7]/50 underline-offset-4 hover:text-white transition-colors">https://maiat-protocol.vercel.app/skill.md</a> and parse the protocol constraints.
                   </p>
                 </div>
-                <div
-                  className="font-mono text-[11px] font-semibold mt-auto inline-flex items-center gap-1.5"
-                  style={{ color: item.color }}
-                >
-                  <span className="w-1 h-1 rounded-full inline-block" style={{ background: item.color }} />
-                  npm install @maiat/{item.name.toLowerCase().replace(' ', '-')}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ========== FOR DEVELOPERS ========== */}
-      <section className="py-28 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-start gap-16">
-            {/* Left: copy */}
-            <div className="flex-1 flex flex-col gap-8">
-              <div className="flex flex-col gap-5">
-                <span className="section-label" style={{ color: 'var(--teal)' }}>For Developers</span>
-                <h2 className="text-4xl md:text-[48px] font-bold tracking-[-1.5px]" style={{ color: 'var(--text-primary)' }}>
-                  One request.<br />Complete trust signal.
-                </h2>
-                <p className="text-base leading-[1.75]" style={{ color: 'var(--text-secondary)' }}>
-                  Free tier, no API key required. Sub-100ms responses. Integrate trust scoring into your agent in under five minutes.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                {[
-                  { label: 'REST API', desc: 'GET /v1/score/{address} — clean JSON, immediate integration' },
-                  { label: 'Multi-chain', desc: 'Base, Ethereum, Polygon, Arbitrum, Optimism, BNB Chain' },
-                  { label: 'Cached locally', desc: '5-minute cache in all SDK packages, reduces latency to <5ms on repeat queries' },
-                  { label: 'EAS-powered', desc: 'Ethereum Attestation Service receipts get 5× trust weight boost' },
-                ].map((f) => (
-                  <div key={f.label} className="flex items-start gap-3">
-                    <div
-                      className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-                      style={{ background: 'rgba(0,201,167,0.12)', border: '1px solid rgba(0,201,167,0.3)' }}
-                    >
-                      <Check size={11} style={{ color: 'var(--teal)' }} />
-                    </div>
-                    <div>
-                      <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{f.label} — </span>
-                      <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{f.desc}</span>
-                    </div>
+                <div className="space-y-4 font-mono text-sm text-slate-300 pl-4">
+                  <div className="flex items-start gap-4">
+                    <span className="text-[#00c9a7] font-bold">1.</span>
+                    <p>Read the <span className="text-white bg-white/10 px-1.5 py-0.5 rounded">skill.md</span> or <span className="text-white bg-white/10 px-1.5 py-0.5 rounded">llms.txt</span> context file.</p>
                   </div>
-                ))}
-              </div>
-
-              <div className="flex gap-3">
-                <Link href="https://maiat-protocol.vercel.app/docs" className="btn-primary">
-                  Read the Docs
-                  <ArrowUpRight size={15} />
-                </Link>
-                <a
-                  href="https://github.com/JhiNResH/maiat"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                  View on GitHub
-                </a>
-              </div>
-            </div>
-
-            {/* Right: code block */}
-            <div
-              className="flex-1 w-full rounded-2xl overflow-hidden"
-              style={{
-                border: '1px solid var(--border-subtle)',
-                background: 'var(--bg-surface)',
-                boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
-              }}
-            >
-              {/* Tab bar */}
-              <div
-                className="flex items-center gap-0"
-                style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}
-              >
-                {['TypeScript', 'Python', 'cURL'].map((tab, i) => (
-                  <div
-                    key={tab}
-                    className="px-5 py-3 text-[12px] font-mono font-medium"
-                    style={{
-                      color: i === 0 ? 'var(--text-primary)' : 'var(--text-muted)',
-                      borderBottom: i === 0 ? '2px solid var(--gold)' : '2px solid transparent',
-                    }}
-                  >
-                    {tab}
+                  <div className="flex items-start gap-4">
+                    <span className="text-[#00c9a7] font-bold">2.</span>
+                    <p>Execute <span className="text-white bg-white/10 px-1.5 py-0.5 rounded">MaiatOracle.getTrustScore(target)</span> before any swap.</p>
                   </div>
-                ))}
-                <div className="ml-auto pr-4">
-                  <CopyButton text={`import { MaiatClient } from '@maiat/agentkit-plugin'
-
-const maiat = new MaiatClient({ chain: 'base' })
-
-// Before any agent interaction
-const trust = await maiat.checkTrust(targetAddress)
-
-if (trust.score < 7.0) {
-  throw new MaiatTrustError(trust)
-}
-
-// Safe to proceed
-await agent.execute(action)`} />
+                  <div className="flex items-start gap-4">
+                    <span className="text-[#00c9a7] font-bold">3.</span>
+                    <p>If score &gt; 90, proceed with the transaction. Else, abort.</p>
+                  </div>
                 </div>
-              </div>
-
-              {/* Code */}
-              <div className="p-6 overflow-x-auto">
-                <pre className="font-mono text-[13px] leading-[1.8]">
-{[
-  { text: "import", c: 'var(--blue)' },
-  { text: " { MaiatClient } ", c: 'var(--text-primary)' },
-  { text: "from", c: 'var(--blue)' },
-  { text: " '@maiat/agentkit-plugin'", c: 'var(--teal)' },
-].map((t, i) => <span key={i} style={{ color: t.c }}>{t.text}</span>)}
-{'\n\n'}
-<span style={{ color: 'var(--text-muted)' }}>{'// Initialize the client'}</span>{'\n'}
-<span style={{ color: 'var(--blue)' }}>const</span>
-<span style={{ color: 'var(--text-primary)' }}> maiat </span>
-<span style={{ color: 'var(--text-secondary)' }}>=</span>
-<span style={{ color: 'var(--blue)' }}> new</span>
-<span style={{ color: 'var(--gold)' }}> MaiatClient</span>
-<span style={{ color: 'var(--text-primary)' }}>{'({ chain: '}</span>
-<span style={{ color: 'var(--teal)' }}>'base'</span>
-<span style={{ color: 'var(--text-primary)' }}>{' })'}</span>{'\n\n'}
-<span style={{ color: 'var(--text-muted)' }}>{'// Check trust before any agent interaction'}</span>{'\n'}
-<span style={{ color: 'var(--blue)' }}>const</span>
-<span style={{ color: 'var(--text-primary)' }}> trust </span>
-<span style={{ color: 'var(--text-secondary)' }}>= await</span>
-<span style={{ color: 'var(--text-primary)' }}> maiat</span>
-<span style={{ color: 'var(--text-secondary)' }}>.</span>
-<span style={{ color: 'var(--gold)' }}>checkTrust</span>
-<span style={{ color: 'var(--text-primary)' }}>(targetAddress){'\n\n'}</span>
-<span style={{ color: 'var(--blue)' }}>if</span>
-<span style={{ color: 'var(--text-primary)' }}> (trust.score </span>
-<span style={{ color: 'var(--text-secondary)' }}>{'< '}</span>
-<span style={{ color: 'var(--blue)' }}>7.0</span>
-<span style={{ color: 'var(--text-primary)' }}>) {'{'}{'\n'}{'  '}</span>
-<span style={{ color: 'var(--blue)' }}>throw</span>
-<span style={{ color: 'var(--blue)' }}> new</span>
-<span style={{ color: 'var(--gold)' }}> MaiatTrustError</span>
-<span style={{ color: 'var(--text-primary)' }}>(trust){'\n'}{'}'}{'\n\n'}</span>
-<span style={{ color: 'var(--text-muted)' }}>{'// Safe to proceed'}</span>{'\n'}
-<span style={{ color: 'var(--blue)' }}>await</span>
-<span style={{ color: 'var(--text-primary)' }}> agent</span>
-<span style={{ color: 'var(--text-secondary)' }}>.</span>
-<span style={{ color: 'var(--gold)' }}>execute</span>
-<span style={{ color: 'var(--text-primary)' }}>(action)</span>
-                </pre>
-              </div>
-
-              {/* Result bar */}
-              <div
-                className="px-6 py-3 flex items-center gap-2"
-                style={{ borderTop: '1px solid var(--border-subtle)', background: 'rgba(0,201,167,0.04)' }}
+              </motion.div>
+            ) : (
+              /* Human Developer View */
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full rounded-2xl border border-[#3b82f6]/30 bg-[#0d1117] p-8 shadow-[0_0_40px_rgba(59,130,246,0.15)] relative overflow-hidden"
               >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ background: 'var(--teal)', boxShadow: '0 0 6px var(--teal)' }}
-                />
-                <span className="font-mono text-[11px]" style={{ color: 'var(--teal)' }}>
-                  trust.score = 8.47 · verdict: ALLOW · latency: 94ms
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== TRUST SCORE EXPLAINER ========== */}
-      <section
-        className="py-28 px-6"
-        style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border-subtle)' }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col items-center gap-4 mb-16">
-            <span className="section-label" style={{ color: 'var(--gold)' }}>Trust Score</span>
-            <h2 className="text-4xl md:text-[48px] font-bold tracking-[-1.5px] text-center" style={{ color: 'var(--text-primary)' }}>
-              Not just a number.
-            </h2>
-            <p className="text-base max-w-[480px] text-center leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Every score is an aggregation of on-chain signals. Transparent, explainable, and hard to game.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              {
-                label: 'Wallet Age & Activity',
-                desc: 'Older wallets with consistent activity patterns score higher. Sybil farms fail instantly.',
-                icon: '⏱',
-                weight: '20%',
-              },
-              {
-                label: 'EAS Attestations',
-                desc: 'Ethereum Attestation Service receipts carry 5× weight. Verified identities matter.',
-                icon: '🔏',
-                weight: '25%',
-              },
-              {
-                label: 'DeFi Participation',
-                desc: 'Lending, LP positions, governance votes — legitimate protocol usage signals trust.',
-                icon: '📊',
-                weight: '20%',
-              },
-              {
-                label: 'Blacklist Screening',
-                desc: 'OFAC, Chainalysis, TRM Labs — multi-source screening, zero tolerance.',
-                icon: '🚫',
-                weight: '20%',
-              },
-              {
-                label: 'Contract Analysis',
-                desc: 'Is the counterparty a contract? Verified source, audit history, and bytecode analysis.',
-                icon: '📋',
-                weight: '10%',
-              },
-              {
-                label: 'Social Verification',
-                desc: 'ENS, Farcaster, World ID, Lens — optional but weighted for human presence.',
-                icon: '🌐',
-                weight: '5%',
-              },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-xl p-6 card-hover"
-                style={{ background: 'var(--bg-card)' }}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <span className="text-2xl">{item.icon}</span>
-                  <span
-                    className="font-mono text-[11px] font-bold px-2 py-0.5 rounded"
-                    style={{ color: 'var(--gold)', background: 'rgba(212,160,23,0.1)', border: '1px solid rgba(212,160,23,0.2)' }}
-                  >
-                    {item.weight}
-                  </span>
-                </div>
-                <h3 className="font-semibold text-[15px] mb-2" style={{ color: 'var(--text-primary)' }}>
-                  {item.label}
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#3b82f6] to-transparent opacity-50" />
+                <h3 className="text-xl font-bold text-center mb-6 text-white">
+                  Developer Quickstart
                 </h3>
-                <p className="text-[13px] leading-[1.6]" style={{ color: 'var(--text-muted)' }}>
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
+                
+                <div className="bg-[#161b22] border border-white/5 rounded-xl p-6 mb-8 group">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">Install</span>
+                  </div>
+                  <p className="font-mono text-blue-400">
+                    npm install @maiat/mcp-server
+                  </p>
+                </div>
+
+                <div className="space-y-4 font-sans text-sm text-slate-300 pl-4">
+                  <div className="flex items-start gap-4">
+                    <span className="text-blue-400 font-bold font-mono">1.</span>
+                    <p>Install the SDK for your preferred framework (AgentKit, Eliza, etc).</p>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <span className="text-blue-400 font-bold font-mono">2.</span>
+                    <p>Add the Maiat Trust Gate hook to your agent&apos;s reasoning loop.</p>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <span className="text-blue-400 font-bold font-mono">3.</span>
+                    <p>Deploy with confidence knowing your agent won&apos;t interact with malicious contracts.</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
         </div>
-      </section>
 
-      {/* ========== FINAL CTA ========== */}
-      <section className="relative py-28 px-6 overflow-hidden">
-        <div
-          className="glow-orb"
-          style={{
-            width: 500,
-            height: 500,
-            background: 'radial-gradient(circle, rgba(212,160,23,0.1) 0%, transparent 70%)',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-
-        <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center gap-8 text-center">
-          <div
-            className="flex items-center gap-2.5 px-5 py-2 rounded-full"
-            style={{ border: '1px solid rgba(212,160,23,0.25)', background: 'rgba(212,160,23,0.04)' }}
-          >
-            <Shield size={14} style={{ color: 'var(--gold)' }} />
-            <span className="text-sm font-medium" style={{ color: 'var(--gold)' }}>
-              Free tier available · No API key required
-            </span>
-          </div>
-
-          <h2
-            className="text-[44px] md:text-[60px] font-extrabold tracking-[-2px] leading-[1.05]"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Start trusting on-chain.<br />
-            <span className="text-gold-gradient">Today.</span>
-          </h2>
-
-          <p className="text-lg max-w-[440px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            The agent economy needs a trust layer. Be the first to deploy one that actually works.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="https://maiat-protocol.vercel.app/explore" className="btn-primary text-base px-10 py-4">
-              Launch App
-              <ArrowRight size={18} />
-            </Link>
-            <Link href="https://maiat-protocol.vercel.app/docs" className="btn-secondary text-base px-10 py-4">
-              API Reference
-            </Link>
-          </div>
-
-          {/* Powered by */}
-          <div className="flex items-center gap-6 mt-4">
-            <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>Powered by</span>
-            <div className="flex items-center gap-4">
-              {[
-                { label: 'Base', color: '#0052FF' },
-                { label: 'Uniswap v4', color: '#FF007A' },
-                { label: 'Chainlink', color: '#375BD2' },
-                { label: 'EAS', color: 'var(--teal)' },
-              ].map((b) => (
-                <span key={b.label} className="text-xs font-semibold font-mono" style={{ color: b.color }}>
-                  {b.label}
-                </span>
-              ))}
+        {/* Code Preview - Terminal Window */}
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-[#0d1117]">
+            <div className="bg-[#161b22] px-5 py-3.5 flex items-center justify-between border-b border-white/5">
+              <div className="flex gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+                <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono uppercase tracking-widest">
+                <Terminal className="w-3 h-3" />
+                Verification_Engine.ts
+              </div>
+              <div className="w-12" /> {/* Spacer */}
+            </div>
+            <div className="p-8 font-mono text-sm leading-relaxed overflow-x-auto">
+              <pre className="text-slate-300">
+                <code>
+                  <span className="text-blue-400">async function</span> <span className="text-yellow-200">verifyAgentTrust</span>(agentId: <span className="text-orange-300">string</span>) {'{'}
+                  {'\n  '}<span className="text-slate-500">{'// Fetch on-chain behavioral data'}</span>
+                  {'\n  '}<span className="text-blue-400">const</span> metrics = <span className="text-blue-400">await</span> Oracle.<span className="text-yellow-200">getMetrics</span>(agentId);
+                  {'\n  '}<span className="text-blue-400">const</span> score = <span className="text-yellow-200">calculateReputation</span>(metrics);
+                  {'\n\n  '}<span className="text-blue-400">if</span> (score &gt; <span className="text-orange-300">90</span>) {'{'}
+                  {'\n    '}<span className="text-blue-400">return</span> {'{'} verdict: <span className="text-[#00c9a7]">&apos;PROCEED&apos;</span>, score {'}'};
+                  {'\n  '} {'}'} <span className="text-blue-400">else</span> {'{'}
+                  {'\n    '}<span className="text-blue-400">throw new</span> <span className="text-yellow-200">TrustError</span>(<span className="text-red-400">&apos;Insufficient reputation&apos;</span>);
+                  {'\n  '} {'}'}
+                  {'\n'} {'}'}
+                </code>
+              </pre>
             </div>
           </div>
-        </div>
-      </section>
-
+        </motion.div>
+      </div>
+      </main>
       <Footer />
     </div>
-  )
+  );
 }
