@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Sora, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const sora = Sora({
-  variable: "--font-sora",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -16,7 +15,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Maiat — The Trust Layer for AI Agents",
-  description: "The native trust and reputation infrastructure for agentic commerce on Base. Verified reviews, on-chain trust scores, and trust-gated swaps.",
+  description:
+    "The native trust and reputation infrastructure for AI agents on Base Mainnet. Verified reviews, on-chain trust scores, and trust‑gated swaps.",
   openGraph: {
     title: "Maiat — Trust Infrastructure for AI Agents",
     description: "Query any address. Get a trust score. Trade with confidence.",
@@ -28,8 +28,11 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Maiat — The Trust Layer for AI Agents",
-    description: "The native trust and reputation infrastructure for agentic commerce on Base.",
+    description: "The native trust and reputation infrastructure for AI agents on Base Mainnet.",
     creator: "@0xmaiat",
+  },
+  icons: {
+    icon: "/maiat-logo.jpg",
   },
 };
 
@@ -40,7 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sora.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans`}
+      >
         {children}
       </body>
     </html>
