@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -16,15 +17,7 @@ export function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-5 max-w-[280px]">
             <div className="flex items-center gap-2.5">
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: 'var(--gold)' }}
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" stroke="#060710" strokeWidth="1.5" fill="none"/>
-                  <circle cx="7" cy="7" r="2" fill="#060710"/>
-                </svg>
-              </div>
+              <Image src="/maiat-logo.jpg" alt="Maiat" width={28} height={28} className="w-7 h-7 rounded-lg shadow-lg shadow-[#3b82f6]/20" />
               <span className="font-mono text-[15px] font-bold tracking-[4px] uppercase" style={{ color: 'var(--text-primary)' }}>
                 Maiat
               </span>
@@ -91,9 +84,11 @@ export function Footer() {
                 Integrate
               </span>
               {[
-                { label: 'MCP Server', href: '#' },
-                { label: 'AgentKit Plugin', href: '#' },
-                { label: 'ElizaOS Plugin', href: '#' },
+                { label: 'MCP Server', href: 'https://github.com/JhiNResH/maiat-protocol/pkgs/npm/mcp-server' },
+                { label: 'AgentKit Plugin', href: 'https://github.com/users/JhiNResH/packages/npm/package/agentkit-plugin' },
+                { label: 'Virtuals Plugin', href: 'https://github.com/users/JhiNResH/packages/npm/package/virtuals-plugin' },
+                { label: 'Game Maiat Plugin', href: 'https://github.com/users/JhiNResH/packages/npm/package/game-maiat-plugin' },
+                { label: 'ElizaOS Plugin', href: 'https://github.com/users/JhiNResH/packages/npm/package/elizaos-plugin' },
                 { label: 'REST API', href: 'https://maiat-protocol.vercel.app/docs' },
               ].map((link) => (
                 <Link
@@ -142,11 +137,7 @@ export function Footer() {
             © 2026 Maiat Protocol. All rights reserved.
           </p>
           <p className="text-xs font-mono flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-            Built on
-            <span style={{ color: 'var(--blue)', fontWeight: 600 }}>Base</span>
-            ·
-            Powered by
-            <span style={{ color: 'var(--gold)', fontWeight: 600 }}>Uniswap v4</span>
+            Built on <span style={{ color: 'var(--blue)', fontWeight: 600 }}>Base</span>
           </p>
         </div>
       </div>
