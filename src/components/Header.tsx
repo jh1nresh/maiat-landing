@@ -44,8 +44,8 @@ export function Header() {
 
         <nav className="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           {[
-            { label: 'Explore', href: 'https://maiat-protocol.vercel.app/explore' },
-            { label: 'Docs', href: 'https://maiat-protocol.vercel.app/docs' },
+            { label: 'Explore', href: 'https://app.maiat.io/explore' },
+            { label: 'Docs', href: 'https://app.maiat.io/docs' },
             { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat' },
           ].map((item) => (
             <Link
@@ -79,7 +79,7 @@ export function Header() {
             <span className="w-1.5 h-1.5 rounded-full inline-block pulse-dot" style={{ background: 'var(--teal)', boxShadow: '0 0 6px var(--teal)' }} />
             Live on Base
           </div>
-          <Link href="https://maiat-protocol.vercel.app/explore" className="btn-primary text-sm !py-2.5 !px-6">
+          <Link href="https://app.maiat.io/monitor" className="btn-primary text-sm !py-2.5 !px-6">
             Launch App
           </Link>
         </div>
@@ -101,15 +101,15 @@ export function Header() {
       {mobileOpen && (
         <div className="md:hidden px-6 pb-4 flex flex-col gap-1" style={{ borderTop: '1px solid var(--border-subtle)' }}>
           {[
-            { label: 'Explore', href: 'https://maiat-protocol.vercel.app/explore' },
-            { label: 'Docs', href: 'https://maiat-protocol.vercel.app/docs' },
+            { label: 'Explore', href: 'https://app.maiat.io/explore' },
+            { label: 'Docs', href: 'https://app.maiat.io/docs' },
             { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat' },
           ].map((item) => (
             <Link key={item.label} href={item.href} className="py-3 text-sm font-medium" style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-subtle)' }}>
               {item.label}
             </Link>
           ))}
-          <Link href="https://maiat-protocol.vercel.app/explore" className="btn-primary mt-3 justify-center">
+          <Link href="https://app.maiat.io/monitor" className="btn-primary mt-3 justify-center">
             Launch App
           </Link>
         </div>

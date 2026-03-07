@@ -232,10 +232,10 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-wrap items-center justify-center gap-3"
           >
-            <Link href="https://maiat-protocol.vercel.app/" className="btn-primary">
+            <Link href="https://app.maiat.io/monitor" className="btn-primary">
               Launch App <ArrowRight size={16} />
             </Link>
-            <Link href="https://maiat-protocol.vercel.app/docs" className="btn-ghost">
+            <Link href="https://app.maiat.io/docs" className="btn-ghost">
               Learn More
             </Link>
           </motion.div>
@@ -391,10 +391,10 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="https://maiat-protocol.vercel.app/" className="btn-primary text-base !px-10 !py-4">
+            <Link href="https://app.maiat.io/monitor" className="btn-primary text-base !px-10 !py-4">
               Launch App <ArrowRight size={18} />
             </Link>
-            <Link href="https://maiat-protocol.vercel.app/docs" className="btn-ghost text-base !px-10 !py-4">
+            <Link href="https://app.maiat.io/docs" className="btn-ghost text-base !px-10 !py-4">
               API Reference
             </Link>
           </div>

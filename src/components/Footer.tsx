@@ -40,9 +40,9 @@ export function Footer() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {[
               { title: 'Product', links: [
-                { label: 'Explore', href: 'https://maiat-protocol.vercel.app/explore' },
-                { label: 'API Docs', href: 'https://maiat-protocol.vercel.app/docs' },
-                { label: 'Trust Score', href: 'https://maiat-protocol.vercel.app/docs' },
+                { label: 'Explore', href: 'https://app.maiat.io/explore' },
+                { label: 'API Docs', href: 'https://app.maiat.io/docs' },
+                { label: 'Trust Score', href: 'https://app.maiat.io/docs' },
               ]},
               { title: 'Integrate', links: [
                 { label: 'MCP Server', href: '#' },
