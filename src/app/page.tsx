@@ -6,6 +6,7 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import { ArrowRight, Search, Shield, Zap } from 'lucide-react'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { RoleToggle } from '@/components/RoleToggle'
 
 /* ─── Count-up Hook ─── */
 function useCountUp(end: number, duration: number = 2000, decimals: number = 0) {
@@ -247,6 +248,9 @@ export default function HomePage() {
           <div className="w-px h-8" style={{ background: 'linear-gradient(to bottom, transparent, var(--text-muted))' }} />
         </div>
       </section>
+
+      {/* ═══════ ROLE TOGGLE ═══════ */}
+      <RoleToggle />
 
       {/* ═══════ STATS BAR ═══════ */}
       <div style={{ borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
