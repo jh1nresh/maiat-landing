@@ -40,7 +40,7 @@ export function Footer() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {[
               { title: 'Product', links: [
-                { label: 'Explore', href: 'https://app.maiat.io/explore' },
+                { label: 'Explore', href: 'https://app.maiat.io/monitor' },
                 { label: 'API Docs', href: 'https://app.maiat.io/docs' },
                 { label: 'Trust Score', href: 'https://app.maiat.io/docs' },
               ]},

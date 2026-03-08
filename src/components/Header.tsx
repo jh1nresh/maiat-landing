@@ -44,7 +44,7 @@ export function Header() {
 
         <nav className="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           {[
-            { label: 'Explore', href: 'https://app.maiat.io/explore' },
+            { label: 'Explore', href: 'https://app.maiat.io/monitor' },
             { label: 'Docs', href: 'https://app.maiat.io/docs' },
             { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat' },
           ].map((item) => (
@@ -101,7 +101,7 @@ export function Header() {
       {mobileOpen && (
         <div className="md:hidden px-6 pb-4 flex flex-col gap-1" style={{ borderTop: '1px solid var(--border-subtle)' }}>
           {[
-            { label: 'Explore', href: 'https://app.maiat.io/explore' },
+            { label: 'Explore', href: 'https://app.maiat.io/monitor' },
             { label: 'Docs', href: 'https://app.maiat.io/docs' },
             { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat' },
           ].map((item) => (

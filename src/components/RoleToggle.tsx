@@ -127,7 +127,7 @@ export function RoleToggle() {
                   ))}
                 </div>
 
-                <Link href="https://app.maiat.io/explore" className="btn-primary w-full justify-center">
+                <Link href="https://app.maiat.io/monitor" className="btn-primary w-full justify-center">
                   Explore Trust Scores <ArrowRight size={16} />
                 </Link>
               </div>
@@ -203,7 +203,7 @@ export function RoleToggle() {
                   >
                     Read Full Docs <ArrowRight size={14} />
                   </Link>
-                  <Link href="https://app.maiat.io/explore" className="btn-ghost flex-1 justify-center">
+                  <Link href="https://app.maiat.io/monitor" className="btn-ghost flex-1 justify-center">
                     Explore Agents
                   </Link>
                 </div>
