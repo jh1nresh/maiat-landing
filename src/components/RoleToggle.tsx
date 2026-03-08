@@ -127,7 +127,7 @@ export function RoleToggle() {
                   ))}
                 </div>
 
-                <Link href="https://maiat-protocol.vercel.app/explore" className="btn-primary w-full justify-center">
+                <Link href="https://app.maiat.io/explore" className="btn-primary w-full justify-center">
                   Explore Trust Scores <ArrowRight size={16} />
                 </Link>
               </div>
@@ -191,7 +191,7 @@ export function RoleToggle() {
 
                 <div className="flex gap-3">
                   <Link
-                    href="https://maiat-protocol.vercel.app/docs"
+                    href="https://app.maiat.io/docs"
                     className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold transition-all cursor-pointer"
                     style={{
                       background: 'rgba(0, 201, 167, 0.1)',
@@ -203,7 +203,7 @@ export function RoleToggle() {
                   >
                     Read Full Docs <ArrowRight size={14} />
                   </Link>
-                  <Link href="https://maiat-protocol.vercel.app/explore" className="btn-ghost flex-1 justify-center">
+                  <Link href="https://app.maiat.io/explore" className="btn-ghost flex-1 justify-center">
                     Explore Agents
                   </Link>
                 </div>
