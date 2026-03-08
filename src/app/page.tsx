@@ -149,7 +149,7 @@ const INTEGRATIONS = [
 
 /* ─── Stats Data ─── */
 const STATS = [
-  { end: 847, suffix: 'K+', label: 'Addresses Scored' },
+  { end: 17, suffix: 'K+', label: 'Agents Indexed' },
   { end: 120, prefix: '<', suffix: 'ms', label: 'Avg Latency' },
   { end: 6, suffix: '', label: 'Chains Supported' },
   { end: 99.9, suffix: '%', label: 'API Uptime', decimals: 1 },

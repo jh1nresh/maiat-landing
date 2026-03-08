@@ -115,7 +115,7 @@ export function RoleToggle() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
-                    { icon: Zap, label: 'Real-time Scores', desc: '2,500+ agents indexed', color: 'var(--gold)' },
+                    { icon: Zap, label: 'Real-time Scores', desc: '17,000+ agents indexed', color: 'var(--gold)' },
                     { icon: Shield, label: 'On-chain Verified', desc: 'Built on Base', color: 'var(--teal)' },
                     { icon: Terminal, label: 'Free API', desc: 'No key required', color: 'var(--blue)' },
                   ].map((item) => (
