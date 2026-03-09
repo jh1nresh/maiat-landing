@@ -7,26 +7,27 @@
 }
 
 :root {
-  --bg-base: #02040a;
-  --bg-surface: #080b18;
-  --bg-elevated: #0e1225;
-  --bg-card: rgba(14, 18, 37, 0.6);
+  /* Synced with app.maiat.io (maiat-protocol) */
+  --bg-base: #050508;
+  --bg-surface: #0d0e17;
+  --bg-elevated: #13141f;
+  --bg-card: rgba(13, 14, 23, 0.75);
 
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-default: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(212, 160, 23, 0.2);
+  --border-subtle: #181928;
+  --border-default: #1e2035;
+  --border-accent: rgba(212, 160, 23, 0.15);
 
   --gold: #d4a017;
-  --gold-light: #e8c547;
-  --gold-dim: rgba(212, 160, 23, 0.5);
+  --gold-light: #e8b84a;
+  --gold-dim: #b8860b;
   --gold-glow: rgba(212, 160, 23, 0.12);
-  --teal: #00c9a7;
-  --blue: #4a9eff;
-  --red: #f87171;
+  --teal: #10b981;
+  --blue: #6d8aff;
+  --red: #ef4444;
 
-  --text-primary: #f0f2f8;
-  --text-secondary: #8892b0;
-  --text-muted: #4a5270;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
 }
 
 * { box-sizing: border-box; }
@@ -114,16 +115,23 @@ html, body {
 /* ===== GLASS CARDS ===== */
 .glass {
   background: var(--bg-card);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(212, 160, 23, 0.08);
   border-radius: 20px;
-  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 0 1px rgba(212, 160, 23, 0.04) inset,
+    0 8px 32px rgba(0, 0, 0, 0.5);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass:hover {
-  border-color: var(--border-accent);
-  box-shadow: 0 0 40px rgba(212, 160, 23, 0.06), 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: rgba(13, 14, 23, 0.85);
+  border-color: rgba(212, 160, 23, 0.15);
+  box-shadow: 
+    0 0 0 1px rgba(212, 160, 23, 0.06) inset,
+    0 0 40px rgba(212, 160, 23, 0.08),
+    0 20px 60px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
 }
 
@@ -137,7 +145,7 @@ html, body {
   padding: 14px 32px;
   font-size: 15px;
   letter-spacing: 0.01em;
-  transition: all 0.25s ease;
+  transition: all 0.4s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -153,7 +161,7 @@ html, body {
   inset: 0;
   background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
   opacity: 0;
-  transition: opacity 0.25s;
+  transition: opacity 0.4s;
 }
 
 .btn-primary:hover {
@@ -172,7 +180,7 @@ html, body {
   padding: 14px 32px;
   font-size: 15px;
   border: 1px solid var(--border-default);
-  transition: all 0.25s ease;
+  transition: all 0.4s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -197,7 +205,7 @@ html, body {
 .reveal {
   opacity: 0;
   transform: translateY(32px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 1.0s cubic-bezier(0.16, 1, 0.3, 1), transform 1.0s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal.visible {
@@ -205,10 +213,10 @@ html, body {
   transform: translateY(0);
 }
 
-.reveal.delay-1 { transition-delay: 0.1s; }
-.reveal.delay-2 { transition-delay: 0.2s; }
-.reveal.delay-3 { transition-delay: 0.3s; }
-.reveal.delay-4 { transition-delay: 0.4s; }
+.reveal.delay-1 { transition-delay: 0.15s; }
+.reveal.delay-2 { transition-delay: 0.3s; }
+.reveal.delay-3 { transition-delay: 0.45s; }
+.reveal.delay-4 { transition-delay: 0.6s; }
 
 /* ===== GAUGE ===== */
 @keyframes gaugeStroke {
