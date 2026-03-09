@@ -119,7 +119,7 @@ const STEPS = [
   {
     num: '01',
     title: 'Query Any Address',
-    desc: 'Pass any EVM address — wallet, contract, or agent. One API call across 6 chains.',
+    desc: 'Pass any EVM address — wallet, contract, or agent. One API call on Base.',
     icon: <Search size={20} />,
     color: 'var(--gold)',
   },
@@ -149,10 +149,10 @@ const INTEGRATIONS = [
 
 /* ─── Stats Data ─── */
 const STATS = [
-  { end: 17, suffix: 'K+', label: 'Agents Indexed' },
+  { end: 2, suffix: 'K+', label: 'Agents Indexed' },
   { end: 120, prefix: '<', suffix: 'ms', label: 'Avg Latency' },
-  { end: 6, suffix: '', label: 'Chains Supported' },
-  { end: 99.9, suffix: '%', label: 'API Uptime', decimals: 1 },
+  { end: 4, suffix: '', label: 'ACP Offerings' },
+  { end: 7, suffix: '+', label: 'MCP Tools' },
 ]
 
 function StatItem({ end, suffix, prefix, label, decimals }: { end: number; suffix: string; prefix?: string; label: string; decimals?: number }) {
