@@ -73,7 +73,7 @@ export function Footer() {
             © 2026 Maiat Protocol
           </p>
           <p className="text-xs flex items-center gap-1.5" style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-            Built on <span style={{ color: '#0052FF', fontWeight: 600 }}>Base</span> · Powered by <span style={{ color: 'var(--gold)', fontWeight: 600 }}>Uniswap v4</span>
+            Built on <span style={{ color: '#0052FF', fontWeight: 600 }}>Base</span>
           </p>
         </div>
       </div>
