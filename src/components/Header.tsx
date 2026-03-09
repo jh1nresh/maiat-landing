@@ -46,7 +46,7 @@ export function Header() {
           {[
             { label: 'Explore', href: 'https://app.maiat.io/monitor' },
             { label: 'Docs', href: 'https://app.maiat.io/docs' },
-            { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat' },
+            { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
           ].map((item) => (
             <Link
               key={item.label}
@@ -103,7 +103,7 @@ export function Header() {
           {[
             { label: 'Explore', href: 'https://app.maiat.io/monitor' },
             { label: 'Docs', href: 'https://app.maiat.io/docs' },
-            { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat' },
+            { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
           ].map((item) => (
             <Link key={item.label} href={item.href} className="py-3 text-sm font-medium" style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-subtle)' }}>
               {item.label}
