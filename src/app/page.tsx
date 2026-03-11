@@ -907,7 +907,7 @@ const AppTransition = ({ isActive, onComplete }: { isActive: boolean; onComplete
   <AnimatePresence>
     {isActive && (
       <motion.div
-        className="fixed inset-0 z-[9999] flex items-center justify-center"
+        className="fixed inset-0 z-9999 flex items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, backgroundColor: '#050508' }}
         transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
