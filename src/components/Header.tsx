@@ -79,7 +79,7 @@ export function Header() {
             <span className="w-1.5 h-1.5 rounded-full inline-block pulse-dot" style={{ background: 'var(--teal)', boxShadow: '0 0 6px var(--teal)' }} />
             Live on Base
           </div>
-          <Link href="https://app.maiat.io/monitor" className="btn-primary text-sm !py-2.5 !px-6">
+          <Link href="https://app.maiat.io/monitor" className="btn-primary text-sm py-2.5! px-6!">
             Launch App
           </Link>
         </div>
