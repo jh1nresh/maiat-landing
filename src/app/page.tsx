@@ -902,10 +902,50 @@ const Footer = () => (
   </footer>
 );
 
+// --- App Transition Overlay ---
+const AppTransition = ({ isActive, onComplete }: { isActive: boolean; onComplete: () => void }) => (
+  <AnimatePresence>
+    {isActive && (
+      <motion.div
+        className="fixed inset-0 z-[9999] flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, backgroundColor: '#050508' }}
+        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        onAnimationComplete={onComplete}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="text-center"
+        >
+          <div className="w-12 h-12 border-2 border-[#d4a017] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[#d4a017] text-sm font-semibold tracking-widest uppercase">Entering Maiat</p>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
 export default function LandingPage() {
   const { scrollYProgress } = useScroll();
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<null | { score: number; status: string }>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Intercept all app.maiat.io links for smooth transition
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement).closest('a[href*="app.maiat.io"]');
+      if (link && !isTransitioning) {
+        e.preventDefault();
+        setIsTransitioning(true);
+        setTimeout(() => { window.location.href = (link as HTMLAnchorElement).href; }, 1000);
+      }
+    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [isTransitioning]);
 
   const startScan = () => {
     setIsScanning(true);
@@ -918,6 +958,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFDFB] text-black selection:bg-black selection:text-white relative">
+      <AppTransition isActive={isTransitioning} onComplete={() => {}} />
       <motion.div 
         className="fixed top-0 left-0 right-0 h-1 bg-black origin-left z-100"
         style={{ scaleX: scrollYProgress }}
