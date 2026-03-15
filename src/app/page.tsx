@@ -138,7 +138,7 @@ const CursorSpotlight = () => {
           animate={{ opacity: 0, scale: 4 }}
           transition={{ duration: 1, ease: "easeOut" }}
           style={{ left: pulse.x, top: pulse.y }}
-          className="fixed w-20 h-20 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50 rounded-full border-2 border-blue-500/30"
+          className="fixed w-20 h-20 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[9999] rounded-full border-2 border-blue-500/30"
         />
       ))}
 
@@ -151,7 +151,7 @@ const CursorSpotlight = () => {
           left: smoothX,
           top: smoothY,
         }}
-        className="fixed w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30 opacity-30 mix-blend-soft-light rounded-full bg-gradient-radial from-blue-400/30 via-blue-400/5 to-transparent blur-3xl"
+        className="fixed w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[9998] opacity-30 mix-blend-soft-light rounded-full bg-gradient-radial from-blue-400/30 via-blue-400/5 to-transparent blur-3xl"
       />
       
       {/* Technical Scanner UI */}
@@ -160,7 +160,7 @@ const CursorSpotlight = () => {
           left: smoothX,
           top: smoothY,
         }}
-        className="fixed pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2"
+        className="fixed pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
       >
         {/* Scanner Ring */}
         <motion.div
@@ -202,7 +202,7 @@ const CursorSpotlight = () => {
               left: smoothX,
               top: smoothY,
             }}
-            className="fixed pointer-events-none z-50 flex flex-col gap-1"
+            className="fixed pointer-events-none z-[9999] flex flex-col gap-1"
           >
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-blue-500/20 shadow-2xl shadow-blue-500/10">
               {isScanning ? (
@@ -250,7 +250,7 @@ const AuditTrail = ({ mouseX, mouseY }: { mouseX: any, mouseY: any }) => {
           animate={{ opacity: 0, scale: 0.5 }}
           transition={{ duration: 1 }}
           style={{ left: point.x, top: point.y }}
-          className="fixed w-1 h-1 bg-blue-400 rounded-full pointer-events-none z-20"
+          className="fixed w-1 h-1 bg-blue-400 rounded-full pointer-events-none z-[9998]"
         />
       ))}
     </>
