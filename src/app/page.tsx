@@ -372,33 +372,19 @@ const TrustNode = ({ mouseX, mouseY }: { mouseX: any, mouseY: any }) => {
 
 const BackgroundEffect = () => {
   const { isDark } = useDarkMode();
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  const bgX = useSpring(useTransform(mouseX, [0, 2000], [-20, 20]), { stiffness: 50, damping: 30 });
-  const bgY = useSpring(useTransform(mouseY, [0, 2000], [-20, 20]), { stiffness: 50, damping: 30 });
 
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-      <motion.div 
-        style={{ x: bgX, y: bgY }}
-        className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] ${isDark ? 'bg-blue-500/15' : 'bg-blue-400/10'}`}
+      <div
+        className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] transition-colors duration-1000 ${
+          isDark ? 'bg-blue-900/20' : 'bg-blue-100/30'
+        }`}
       />
-      <motion.div 
-        style={{ x: useTransform(bgX, (v) => -v), y: useTransform(bgY, (v) => -v) }}
-        className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] ${isDark ? 'bg-emerald-400/8' : 'bg-emerald-400/5'}`}
+      <div
+        className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] transition-colors duration-1000 ${
+          isDark ? 'bg-purple-900/10' : 'bg-orange-50/40'
+        }`}
       />
-      <div className={`absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full blur-[120px] ${isDark ? 'bg-purple-400/8' : 'bg-purple-400/5'}`} />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
     </div>
   );
 };
