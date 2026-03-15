@@ -431,7 +431,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
           className="font-display text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.95] text-balance cursor-default"
         >
           The trust layer for <br />
-          <span className={`bg-linear-to-r ${isDark ? 'from-white via-gray-300 to-white' : 'from-black via-gray-700 to-black'} bg-clip-text text-transparent`}>agentic intelligence.</span>
+          <span className={`bg-gradient-to-b ${isDark ? 'from-white to-gray-500' : 'from-black to-gray-700'} bg-clip-text text-transparent`}>agentic intelligence.</span>
         </motion.h1>
         
         {/* Interactive Floating Elements */}
@@ -481,7 +481,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
         transition={{ duration: 0.8, delay: 0.2 }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed font-medium cursor-default relative z-10 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
+        className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed font-medium cursor-default relative z-10"
       >
         Verify AI agent behavioral trust scores on Base — powered by real-time Virtuals ACP job history and cryptographic proofs.
       </motion.p>
@@ -727,7 +727,7 @@ const TrustFeed = () => {
             Trust is the bottleneck of <br />
             <span className="italic serif">autonomous agents.</span>
           </h2>
-          <p className={`text-lg leading-relaxed mb-10 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          <p className={`text-lg leading-relaxed mb-10 text-gray-400`}>
             As AI agents begin to transact independently, the risk of unverified identity and malicious execution grows. Maiat provides a cryptographic trust score for every agent interaction.
           </p>
           <div className="grid grid-cols-2 gap-6">
@@ -739,7 +739,7 @@ const TrustFeed = () => {
             >
               <AlertCircle className="w-8 h-8 text-red-500 mb-5" />
               <h4 className="font-bold text-lg mb-3">Identity Spoofing</h4>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Agents mimicking trusted entities to drain liquidity and exploit protocols.</p>
+              <p className={`text-sm leading-relaxed text-gray-400`}>Agents mimicking trusted entities to drain liquidity and exploit protocols.</p>
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, y: -5 }}
@@ -749,7 +749,7 @@ const TrustFeed = () => {
             >
               <XCircle className="w-8 h-8 text-orange-500 mb-5" />
               <h4 className="font-bold text-lg mb-3">Execution Failure</h4>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Unreliable agents failing critical cross-chain tasks or deviating from objectives.</p>
+              <p className={`text-sm leading-relaxed text-gray-400`}>Unreliable agents failing critical cross-chain tasks or deviating from objectives.</p>
             </motion.div>
           </div>
         </div>
@@ -846,7 +846,7 @@ const BentoFeatures = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
         <div className="max-w-xl">
           <h2 className="font-display text-5xl font-bold mb-6">Built for the <br />machine-to-machine era.</h2>
-          <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>A modular protocol designed for high-frequency agent interactions.</p>
+          <p className={"text-gray-400"}>A modular protocol designed for high-frequency agent interactions.</p>
         </div>
         <button className={`text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all group ${isDark ? 'text-gray-300' : 'text-black'}`}>
           Explore Ecosystem <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -876,7 +876,7 @@ const BentoFeatures = () => {
           </div>
           <div className="relative z-10">
             <h3 className="text-2xl font-bold mb-3">Lightning Fast Oracle</h3>
-            <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Sub-100ms response times globally, built for high-frequency agent interactions and real-time decision making.</p>
+            <p className={`text-sm leading-relaxed text-gray-400`}>Sub-100ms response times globally, built for high-frequency agent interactions and real-time decision making.</p>
           </div>
         </motion.div>
         
@@ -927,7 +927,7 @@ const BentoFeatures = () => {
           </div>
           <div className="relative z-10">
             <h3 className="text-xl font-bold mb-2">Open API</h3>
-            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Free, keyless API. Query any agent&apos;s trust score in under 100ms.</p>
+            <p className={`text-xs text-gray-400`}>Free, keyless API. Query any agent&apos;s trust score in under 100ms.</p>
           </div>
         </motion.div>
         
@@ -953,7 +953,7 @@ const BentoFeatures = () => {
           </div>
           <div className="relative z-10">
             <h3 className="text-2xl font-bold mb-2">Uniswap v4 Hook</h3>
-            <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>TrustGateHook blocks untrusted agents from pool access. The first trust-gated DeFi primitive.</p>
+            <p className={`text-sm leading-relaxed text-gray-400`}>TrustGateHook blocks untrusted agents from pool access. The first trust-gated DeFi primitive.</p>
           </div>
         </motion.div>
       </div>
@@ -994,7 +994,7 @@ const Footer = () => {
             <img src="/maiat-logo.jpg" alt="Maiat" className="w-8 h-8 rounded-lg" />
             <span className="font-display font-bold text-2xl tracking-tight">Maiat Protocol</span>
           </div>
-          <p className={`mb-8 max-w-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          <p className={`mb-8 max-w-xs leading-relaxed text-gray-400`}>
             The decentralized trust infrastructure for the autonomous agent economy.
           </p>
           <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full w-fit border border-blue-100">
@@ -1004,7 +1004,7 @@ const Footer = () => {
         </div>
         <div>
           <h4 className={`text-xs font-bold uppercase tracking-widest mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Product</h4>
-          <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          <ul className={`space-y-4 text-sm font-medium text-gray-400`}>
             <li><a href="https://app.maiat.io" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Trust Monitor</a></li>
             <li><a href="https://app.maiat.io/leaderboard" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Leaderboard</a></li>
             <li><a href="https://app.maiat.io/docs" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Documentation</a></li>
@@ -1012,14 +1012,14 @@ const Footer = () => {
         </div>
         <div>
           <h4 className={`text-xs font-bold uppercase tracking-widest mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Developers</h4>
-          <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          <ul className={`space-y-4 text-sm font-medium text-gray-400`}>
             <li><a href="https://github.com/JhiNResH/maiat-protocol" target="_blank" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>GitHub</a></li>
             <li><a href="https://app.maiat.io/skill.md" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Skill File</a></li>
           </ul>
         </div>
         <div>
           <h4 className={`text-xs font-bold uppercase tracking-widest mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Social</h4>
-          <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          <ul className={`space-y-4 text-sm font-medium text-gray-400`}>
             <li><a href="https://twitter.com/0xmaiat" target="_blank" className={`transition-colors flex items-center gap-2 ${isDark ? 'hover:text-white' : 'hover:text-black'}`}><Twitter className="w-4 h-4" /> Twitter</a></li>
           </ul>
         </div>
@@ -1123,7 +1123,7 @@ function LandingPageInner() {
                 className={`w-20 h-20 border-4 border-t-transparent rounded-full mx-auto mb-8 ${isDark ? 'border-white' : 'border-black'}`}
               />
               <h3 className="text-2xl font-display font-bold mb-2">Analyzing Agent Behavior</h3>
-              <p className={`font-mono text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Fetching Virtuals ACP job history...</p>
+              <p className={`font-mono text-sm text-gray-400`}>Fetching Virtuals ACP job history...</p>
             </div>
           </motion.div>
         )}
@@ -1157,7 +1157,7 @@ function LandingPageInner() {
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-sm mb-8">
                   {scanResult.status}
                 </div>
-                <p className={`text-sm leading-relaxed mb-8 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className={`text-sm leading-relaxed mb-8 text-gray-400`}>
                   This agent has a consistent history of successful job execution and verified identity on Base.
                 </p>
                 <button 
