@@ -11,22 +11,73 @@ import {
 
 // --- Components ---
 
-const Navbar = () => (
-  <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 max-w-7xl mx-auto w-full backdrop-blur-xl bg-white/40 border-b border-white/20 shadow-sm">
-    <div className="flex items-center gap-3 group cursor-pointer">
-      <img src="/maiat-logo.jpg" alt="Maiat" className="w-8 h-8 rounded-lg group-hover:rotate-12 transition-transform shadow-lg shadow-black/20" />
-      <span className="font-display font-bold text-xl tracking-tight">Maiat Protocol</span>
-    </div>
-    <div className="hidden md:flex items-center gap-10 text-xs font-bold uppercase tracking-widest text-gray-500">
-      <a href="https://app.maiat.io/monitor" className="hover:text-black transition-colors">Explore</a>
-      <a href="https://app.maiat.io/leaderboard" className="hover:text-black transition-colors">Leaderboard</a>
-      <a href="https://app.maiat.io/docs" className="hover:text-black transition-colors">Docs</a>
-      <a href="https://app.maiat.io" className="bg-black text-white px-6 py-2.5 rounded-full hover:bg-gray-800 transition-all shadow-xl shadow-black/10 active:scale-95 no-underline">
-        LAUNCH APP
-      </a>
-    </div>
-  </nav>
-);
+// ─── macOS Dock magnification navbar ─────────────────────────────────────────
+
+const dockLinks = [
+  { label: 'Explore', href: 'https://app.maiat.io' },
+  { label: 'Leaderboard', href: 'https://app.maiat.io/leaderboard' },
+  { label: 'Docs', href: 'https://app.maiat.io/docs' },
+  { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
+];
+
+function DockItem({ item, mouseX }: { item: { label: string; href: string }; mouseX: ReturnType<typeof useMotionValue<number>> }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const distance = useTransform(mouseX, (val: number) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - bounds.x - bounds.width / 2;
+  });
+  const scale = useTransform(distance, [-120, 0, 120], [1, 1.35, 1]);
+  const springScale = useSpring(scale, { mass: 0.1, stiffness: 200, damping: 12 });
+
+  return (
+    <a ref={ref} href={item.href} className="relative no-underline">
+      <motion.div style={{ scale: springScale }} className="px-4 py-2 rounded-full">
+        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors">
+          {item.label}
+        </span>
+      </motion.div>
+    </a>
+  );
+}
+
+const Navbar = () => {
+  const mouseX = useMotionValue(-Infinity);
+  return (
+    <motion.nav
+      initial={{ y: -100, x: '-50%', opacity: 0 }}
+      animate={{ y: 0, x: '-50%', opacity: 1 }}
+      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed top-6 left-1/2 z-50 w-[95%] max-w-5xl"
+    >
+      <div className="px-6 py-3 flex items-center justify-between rounded-full bg-white/70 backdrop-blur-[60px] saturate-[180%] border border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+        <a href="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0 no-underline">
+          <img src="/maiat-logo.jpg" alt="Maiat" className="w-7 h-7 rounded-full shadow-lg" />
+          <span className="font-mono font-bold text-base tracking-widest text-black uppercase">MAIAT</span>
+        </a>
+
+        <motion.div
+          className="hidden md:flex items-center gap-0.5"
+          onMouseMove={(e) => mouseX.set(e.clientX)}
+          onMouseLeave={() => mouseX.set(-Infinity)}
+        >
+          {dockLinks.map((item) => (
+            <DockItem key={item.label} item={item} mouseX={mouseX} />
+          ))}
+        </motion.div>
+
+        <div className="hidden md:flex items-center gap-3">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+            <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse bg-emerald-500 shadow-[0_0_6px_rgb(16,185,129)]" />
+            Live on Base
+          </div>
+          <a href="https://app.maiat.io" className="bg-black text-white px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] hover:opacity-90 transition-all shadow-lg no-underline">
+            Launch App
+          </a>
+        </div>
+      </div>
+    </motion.nav>
+  );
+};
 
 const CursorSpotlight = () => {
   const mouseX = useMotionValue(0);
