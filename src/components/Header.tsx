@@ -2,7 +2,49 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
+
+const dockLinks = [
+  { label: 'Explore', href: 'https://app.maiat.io/monitor' },
+  { label: 'Docs', href: 'https://app.maiat.io/docs' },
+  { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
+];
+
+function DockNav() {
+  const mouseX = useMotionValue(-Infinity);
+  return (
+    <motion.nav
+      className="hidden md:flex items-center gap-0.5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+      onMouseMove={(e) => mouseX.set(e.clientX)}
+      onMouseLeave={() => mouseX.set(-Infinity)}
+    >
+      {dockLinks.map((item) => (
+        <DockItem key={item.label} item={item} mouseX={mouseX} />
+      ))}
+    </motion.nav>
+  );
+}
+
+function DockItem({ item, mouseX }: { item: { label: string; href: string }; mouseX: ReturnType<typeof useMotionValue<number>> }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const distance = useTransform(mouseX, (val: number) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - bounds.x - bounds.width / 2;
+  });
+  const scale = useTransform(distance, [-120, 0, 120], [1, 1.35, 1]);
+  const springScale = useSpring(scale, { mass: 0.1, stiffness: 200, damping: 12 });
+
+  return (
+    <Link ref={ref} href={item.href} className="relative">
+      <motion.div style={{ scale: springScale }} className="px-4 py-2 rounded-lg">
+        <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+          {item.label}
+        </span>
+      </motion.div>
+    </Link>
+  );
+}
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
@@ -42,30 +84,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          {[
-            { label: 'Explore', href: 'https://app.maiat.io/monitor' },
-            { label: 'Docs', href: 'https://app.maiat.io/docs' },
-            { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-              style={{ color: 'var(--text-secondary)' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--text-primary)'
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--text-secondary)'
-                e.currentTarget.style.background = 'transparent'
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <DockNav />
 
         <div className="hidden md:flex items-center gap-3">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold"
