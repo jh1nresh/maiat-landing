@@ -9,6 +9,7 @@ import {
   Search, Fingerprint, ShieldCheck, RefreshCw, User, Bot, Copy, Check,
   Sun, Moon
 } from 'lucide-react';
+import { DarkModeProvider, useDarkMode } from './DarkModeContext';
 
 // --- Components ---
 
@@ -21,7 +22,8 @@ const dockLinks = [
   { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
 ];
 
-function DockItem({ item, mouseX, isDark }: { item: { label: string; href: string }; mouseX: ReturnType<typeof useMotionValue<number>>; isDark: boolean }) {
+function DockItem({ item, mouseX }: { item: { label: string; href: string }; mouseX: ReturnType<typeof useMotionValue<number>> }) {
+  const { isDark } = useDarkMode();
   const ref = useRef<HTMLAnchorElement>(null);
   const distance = useTransform(mouseX, (val: number) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
@@ -41,7 +43,8 @@ function DockItem({ item, mouseX, isDark }: { item: { label: string; href: strin
   );
 }
 
-const Navbar = ({ isDark, toggleDark }: { isDark: boolean; toggleDark: () => void }) => {
+const Navbar = () => {
+  const { isDark, toggleDark } = useDarkMode();
   const mouseX = useMotionValue(-Infinity);
   const [navVisible, setNavVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -79,7 +82,7 @@ const Navbar = ({ isDark, toggleDark }: { isDark: boolean; toggleDark: () => voi
         onMouseLeave={() => mouseX.set(-Infinity)}
       >
         {dockLinks.map((item) => (
-          <DockItem key={item.label} item={item} mouseX={mouseX} isDark={isDark} />
+          <DockItem key={item.label} item={item} mouseX={mouseX} />
         ))}
       </motion.div>
 
@@ -285,6 +288,7 @@ const AuditTrail = ({ mouseX, mouseY }: { mouseX: any, mouseY: any }) => {
 };
 
 const TrustGrid = () => {
+  const { isDark } = useDarkMode();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -297,12 +301,15 @@ const TrustGrid = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
+  const gridColor = isDark ? 'rgba(255,255,255,0.3)' : '#000';
+  const gridColorFine = isDark ? '#fff' : '#000';
+
   return (
     <div className="fixed inset-0 -z-20 pointer-events-none overflow-hidden">
       {/* Grid Pattern */}
       <div className="absolute inset-0 opacity-[0.05]" 
         style={{ 
-          backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(${gridColor} 1px, transparent 1px), linear-gradient(90deg, ${gridColor} 1px, transparent 1px)`,
           backgroundSize: '60px 60px'
         }} 
       />
@@ -326,7 +333,7 @@ const TrustGrid = () => {
       >
         <div className="absolute inset-0 opacity-[0.08]" 
           style={{ 
-            backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(${gridColorFine} 1px, transparent 1px), linear-gradient(90deg, ${gridColorFine} 1px, transparent 1px)`,
             backgroundSize: '20px 20px'
           }} 
         />
@@ -364,6 +371,7 @@ const TrustNode = ({ mouseX, mouseY }: { mouseX: any, mouseY: any }) => {
 };
 
 const BackgroundEffect = () => {
+  const { isDark } = useDarkMode();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -383,19 +391,20 @@ const BackgroundEffect = () => {
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
       <motion.div 
         style={{ x: bgX, y: bgY }}
-        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[120px]" 
+        className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] ${isDark ? 'bg-blue-500/15' : 'bg-blue-400/10'}`}
       />
       <motion.div 
         style={{ x: useTransform(bgX, (v) => -v), y: useTransform(bgY, (v) => -v) }}
-        className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-400/5 blur-[120px]" 
+        className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] ${isDark ? 'bg-emerald-400/8' : 'bg-emerald-400/5'}`}
       />
-      <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-purple-400/5 blur-[120px]" />
+      <div className={`absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full blur-[120px] ${isDark ? 'bg-purple-400/8' : 'bg-purple-400/5'}`} />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
     </div>
   );
 };
 
 const Hero = ({ onScan }: { onScan: () => void }) => {
+  const { isDark } = useDarkMode();
   const [isHovered, setIsHovered] = useState(false);
   const [mode, setMode] = useState<'human' | 'agent'>('human');
   const [copied, setCopied] = useState(false);
@@ -412,7 +421,9 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 border border-black/5 text-[10px] font-bold uppercase tracking-widest mb-8 relative z-10"
+        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest mb-8 relative z-10 ${
+          isDark ? 'bg-white/10 border-white/10 text-gray-300' : 'bg-black/5 border-black/5 text-black'
+        }`}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
         Mainnet Live on Base
@@ -430,7 +441,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
           className="font-display text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.95] text-balance cursor-default"
         >
           The trust layer for <br />
-          <span className="bg-linear-to-r from-black via-gray-700 to-black bg-clip-text text-transparent">agentic intelligence.</span>
+          <span className={`bg-linear-to-r ${isDark ? 'from-white via-gray-300 to-white' : 'from-black via-gray-700 to-black'} bg-clip-text text-transparent`}>agentic intelligence.</span>
         </motion.h1>
         
         {/* Interactive Floating Elements */}
@@ -441,28 +452,32 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                 initial={{ opacity: 0, x: -50, rotate: -10 }}
                 animate={{ opacity: 1, x: -140, rotate: -5 }}
                 exit={{ opacity: 0, x: -50, rotate: -10 }}
-                className="absolute top-0 left-0 hidden lg:flex items-center gap-2 bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-2xl shadow-blue-500/10"
+                className={`absolute top-0 left-0 hidden lg:flex items-center gap-2 backdrop-blur-md p-3 rounded-2xl border shadow-2xl shadow-blue-500/10 ${
+                  isDark ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white/20'
+                }`}
               >
                 <div className="bg-blue-500/10 p-1.5 rounded-lg">
                   <Fingerprint className="w-4 h-4 text-blue-500" />
                 </div>
                 <div className="text-left">
                   <div className="text-[8px] font-bold uppercase tracking-tighter text-blue-500/60">Identity</div>
-                  <div className="text-[10px] font-bold text-blue-900">Verified</div>
+                  <div className={`text-[10px] font-bold ${isDark ? 'text-blue-300' : 'text-blue-900'}`}>Verified</div>
                 </div>
               </motion.div>
               <motion.div 
                 initial={{ opacity: 0, x: 50, rotate: 10 }}
                 animate={{ opacity: 1, x: 140, rotate: 5 }}
                 exit={{ opacity: 0, x: 50, rotate: 10 }}
-                className="absolute bottom-10 right-0 hidden lg:flex items-center gap-2 bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-2xl shadow-emerald-500/10"
+                className={`absolute bottom-10 right-0 hidden lg:flex items-center gap-2 backdrop-blur-md p-3 rounded-2xl border shadow-2xl shadow-emerald-500/10 ${
+                  isDark ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white/20'
+                }`}
               >
                 <div className="bg-emerald-500/10 p-1.5 rounded-lg">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
                 </div>
                 <div className="text-left">
                   <div className="text-[8px] font-bold uppercase tracking-tighter text-emerald-500/60">Security</div>
-                  <div className="text-[10px] font-bold text-emerald-900">Proof Gen</div>
+                  <div className={`text-[10px] font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-900'}`}>Proof Gen</div>
                 </div>
               </motion.div>
             </>
@@ -476,7 +491,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
         transition={{ duration: 0.8, delay: 0.2 }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="text-lg md:text-xl text-gray-500 mb-8 max-w-2xl mx-auto leading-relaxed font-medium cursor-default relative z-10"
+        className={`text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed font-medium cursor-default relative z-10 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
       >
         Verify AI agent behavioral trust scores on Base — powered by real-time Virtuals ACP job history and cryptographic proofs.
       </motion.p>
@@ -488,13 +503,13 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
         transition={{ duration: 0.8, delay: 0.25 }}
         className="flex justify-center mb-10 relative z-10"
       >
-        <div className="bg-white border border-black/6 rounded-xl p-1 inline-flex gap-1 shadow-sm">
+        <div className={`border rounded-xl p-1 inline-flex gap-1 shadow-sm ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/6'}`}>
           <button
             onClick={() => setMode('human')}
             className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
               mode === 'human' 
                 ? 'bg-[#1a1a2e] text-white shadow-md' 
-                : 'bg-transparent text-[#5c5c6b] hover:bg-black/3'
+                : `bg-transparent ${isDark ? 'text-gray-400 hover:bg-white/5' : 'text-[#5c5c6b] hover:bg-black/3'}`
             }`}
           >
             <User size={16} />
@@ -505,7 +520,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
             className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
               mode === 'agent' 
                 ? 'bg-[#1a1a2e] text-white shadow-md' 
-                : 'bg-transparent text-[#5c5c6b] hover:bg-black/3'
+                : `bg-transparent ${isDark ? 'text-gray-400 hover:bg-white/5' : 'text-[#5c5c6b] hover:bg-black/3'}`
             }`}
           >
             <Bot size={16} />
@@ -527,26 +542,34 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg mx-auto shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:min-h-[420px] flex flex-col justify-between"
+              className={`rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between ${
+                isDark
+                  ? 'bg-white/5 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.3)]'
+                  : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]'
+              }`}
             >
               <div>
-                <h3 className="text-xl font-bold mb-6 text-center text-black">
+                <h3 className={`text-xl font-bold mb-6 text-center ${isDark ? 'text-white' : 'text-black'}`}>
                   Verify Trust Before You Transact.
                 </h3>
                 <div className="relative mb-6 w-full max-w-md mx-auto">
-                  <div className="font-mono bg-[#f5f5f5] rounded-xl p-4 sm:p-5 text-[13px] sm:text-[14px] leading-relaxed text-center text-[#5c5c6b]">
+                  <div className={`font-mono rounded-xl p-4 sm:p-5 text-[13px] sm:text-[14px] leading-relaxed text-center ${
+                    isDark ? 'bg-white/5 text-gray-400' : 'bg-[#f5f5f5] text-[#5c5c6b]'
+                  }`}>
                     Check any AI agent&apos;s behavioral trust score — powered by real Virtuals ACP job history on Base.
                   </div>
                 </div>
-                <div className="space-y-4 font-medium text-left text-sm sm:text-base text-[#5c5c6b] max-w-md mx-auto px-2 sm:px-6">
-                  <div className="flex gap-3 items-start"><span className="text-[#1a1a2e] font-bold">1.</span> <span>Enter any EVM wallet address</span></div>
-                  <div className="flex gap-3 items-start"><span className="text-[#1a1a2e] font-bold">2.</span> <span>Get a trust score (0–100) and verdict</span></div>
-                  <div className="flex gap-3 items-start"><span className="text-[#1a1a2e] font-bold">3.</span> <span>Decide whether to proceed, caution, or avoid</span></div>
+                <div className={`space-y-4 font-medium text-left text-sm sm:text-base max-w-md mx-auto px-2 sm:px-6 ${isDark ? 'text-gray-400' : 'text-[#5c5c6b]'}`}>
+                  <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>1.</span> <span>Enter any EVM wallet address</span></div>
+                  <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>2.</span> <span>Get a trust score (0–100) and verdict</span></div>
+                  <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>3.</span> <span>Decide whether to proceed, caution, or avoid</span></div>
                 </div>
               </div>
               <a 
                 href="https://app.maiat.io/monitor"
-                className="mt-8 group relative bg-black text-white px-6 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:bg-gray-900 transition-all overflow-hidden active:scale-95 shadow-xl shadow-black/10 w-full max-w-md mx-auto"
+                className={`mt-8 group relative px-6 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all overflow-hidden active:scale-95 shadow-xl w-full max-w-md mx-auto no-underline ${
+                  isDark ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'
+                }`}
               >
                 <span className="relative z-10">Launch App</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform relative z-10" />
@@ -559,28 +582,32 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg mx-auto shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:min-h-[420px] flex flex-col justify-between relative overflow-hidden"
+              className={`rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between relative overflow-hidden ${
+                isDark
+                  ? 'bg-white/5 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.3)]'
+                  : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]'
+              }`}
             >
               <div>
                 <div className="relative z-10 flex items-center justify-center gap-2 mb-6">
-                  <div className="bg-[#f0f9f6] p-2 rounded-lg">
+                  <div className={`p-2 rounded-lg ${isDark ? 'bg-[#00D19D]/10' : 'bg-[#f0f9f6]'}`}>
                     <Bot className="w-4 h-4 text-[#00D19D]" />
                   </div>
-                  <h3 className="text-xl font-bold text-black tracking-tight">
+                  <h3 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-black'}`}>
                     Integrate Maiat Trust ⚖️
                   </h3>
                 </div>
                 
                 <div className="relative z-10 mb-6 w-full max-w-md mx-auto">
-                  <div className="bg-[#f5f5f5] rounded-xl p-4 sm:p-5 group/copy relative">
-                    <div className="text-[10px] font-bold text-[#8a8a99] uppercase tracking-[0.2em] mb-3 text-center">ADD TO YOUR AGENT</div>
+                  <div className={`rounded-xl p-4 sm:p-5 group/copy relative ${isDark ? 'bg-white/5' : 'bg-[#f5f5f5]'}`}>
+                    <div className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-center ${isDark ? 'text-gray-500' : 'text-[#8a8a99]'}`}>ADD TO YOUR AGENT</div>
                     <div className="font-mono text-[13px] sm:text-[14px] leading-relaxed text-center text-[#00D19D] wrap-break-word">
                       Read https://app.maiat.io/skill.md <br className="hidden sm:block" /> and follow the instructions
                     </div>
                   </div>
                 </div>
                 
-                <div className="relative z-10 space-y-4 mb-6 text-sm sm:text-[15px] font-medium text-[#5c5c6b] max-w-md mx-auto px-2">
+                <div className={`relative z-10 space-y-4 mb-6 text-sm sm:text-[15px] font-medium max-w-md mx-auto px-2 ${isDark ? 'text-gray-400' : 'text-[#5c5c6b]'}`}>
                   <div className="flex gap-3 items-start">
                     <span className="text-[#00D19D] font-bold mt-0.5">1</span> 
                     <span>Read the skill file above — it teaches your agent the Maiat API</span>
@@ -595,8 +622,8 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                   </div>
                 </div>
 
-                <div className="relative z-10 bg-[#f5f5f5] rounded-xl p-4 sm:p-5 mb-6 max-w-md mx-auto text-center">
-                  <div className="text-[10px] font-bold text-[#8a8a99] uppercase tracking-[0.2em] mb-3">QUICK API EXAMPLE</div>
+                <div className={`relative z-10 rounded-xl p-4 sm:p-5 mb-6 max-w-md mx-auto text-center ${isDark ? 'bg-white/5' : 'bg-[#f5f5f5]'}`}>
+                  <div className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-3 ${isDark ? 'text-gray-500' : 'text-[#8a8a99]'}`}>QUICK API EXAMPLE</div>
                   <div className="font-mono text-[12px] sm:text-[13px] leading-relaxed">
                     <div className="text-[#00D19D] mb-1">
                       GET /api/v1/agent/0x742d35Cc...
@@ -609,11 +636,15 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
               </div>
               
               <div className="relative z-10 flex flex-col sm:flex-row gap-3 max-w-md mx-auto w-full">
-                <a href="https://app.maiat.io/docs" className="flex-1 bg-black text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors shadow-lg shadow-black/10 no-underline">
+                <a href="https://app.maiat.io/docs" className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-lg no-underline ${
+                  isDark ? 'bg-white text-black shadow-white/10 hover:bg-gray-100' : 'bg-black text-white shadow-black/10 hover:bg-gray-900'
+                }`}>
                   Read Full Docs <ArrowRight className="w-3.5 h-3.5" />
                 </a>
-                <div className="flex-1 rounded-xl bg-[#f5f5f5]">
-                  <a href="https://app.maiat.io/monitor" className="w-full h-full text-black py-3.5 rounded-xl font-bold text-sm hover:bg-[#eaeaea] transition-colors block text-center no-underline" style={{lineHeight: '3.5rem'}}>
+                <div className={`flex-1 rounded-xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-[#f5f5f5]'}`}>
+                  <a href="https://app.maiat.io/monitor" className={`w-full h-full py-3.5 rounded-xl font-bold text-sm transition-colors block text-center no-underline ${
+                    isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-[#eaeaea]'
+                  }`} style={{lineHeight: '3.5rem'}}>
                     Explore Agents
                   </a>
                 </div>
@@ -636,15 +667,17 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
             whileHover={{ 
               y: -10, 
               scale: 1.02,
-              backgroundColor: "rgba(255, 255, 255, 0.6)",
-              borderColor: "rgba(255, 255, 255, 0.8)",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.05)"
+              backgroundColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.6)",
+              borderColor: isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.8)",
+              boxShadow: isDark ? "0 20px 40px rgba(0,0,0,0.3)" : "0 20px 40px rgba(0,0,0,0.05)"
             }}
             transition={{ delay: 0.4 + i * 0.1 }}
-            className="p-8 rounded-[32px] bg-white/30 backdrop-blur-xl border border-white/40 shadow-sm text-left cursor-pointer group transition-colors"
+            className={`p-8 rounded-[32px] backdrop-blur-xl border shadow-sm text-left cursor-pointer group transition-colors ${
+              isDark ? 'bg-white/5 border-white/10' : 'bg-white/30 border-white/40'
+            }`}
           >
             <div className="flex items-center justify-between mb-6">
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] group-hover:text-black transition-colors">{stat.label}</div>
+              <div className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors ${isDark ? 'text-gray-500 group-hover:text-white' : 'text-gray-400 group-hover:text-black'}`}>{stat.label}</div>
               <div className="text-gray-300 group-hover:text-blue-500 transition-colors group-hover:scale-110 duration-300">{stat.icon}</div>
             </div>
             <div className="text-4xl font-display font-bold mb-2 tracking-tight">{stat.value}</div>
@@ -660,6 +693,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
 };
 
 const TrustFeed = () => {
+  const { isDark } = useDarkMode();
   const [items, setItems] = useState([
     { id: 'Agent-712', target: 'Agent-x9a', status: 'failed', score: 12, time: '2s ago' },
     { id: 'Agent-b2c', target: 'Agent-k41', status: 'caution', score: 45, time: '5s ago' },
@@ -703,32 +737,38 @@ const TrustFeed = () => {
             Trust is the bottleneck of <br />
             <span className="italic serif">autonomous agents.</span>
           </h2>
-          <p className="text-gray-500 text-lg leading-relaxed mb-10">
+          <p className={`text-lg leading-relaxed mb-10 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             As AI agents begin to transact independently, the risk of unverified identity and malicious execution grows. Maiat provides a cryptographic trust score for every agent interaction.
           </p>
           <div className="grid grid-cols-2 gap-6">
             <motion.div 
               whileHover={{ scale: 1.05, y: -5 }}
-              className="p-8 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/40 shadow-xl shadow-black/2"
+              className={`p-8 rounded-3xl backdrop-blur-xl border shadow-xl ${
+                isDark ? 'bg-white/5 border-white/10 shadow-black/20' : 'bg-white/40 border-white/40 shadow-black/2'
+              }`}
             >
               <AlertCircle className="w-8 h-8 text-red-500 mb-5" />
               <h4 className="font-bold text-lg mb-3">Identity Spoofing</h4>
-              <p className="text-sm text-gray-500 leading-relaxed">Agents mimicking trusted entities to drain liquidity and exploit protocols.</p>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Agents mimicking trusted entities to drain liquidity and exploit protocols.</p>
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, y: -5 }}
-              className="p-8 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/40 shadow-xl shadow-black/2"
+              className={`p-8 rounded-3xl backdrop-blur-xl border shadow-xl ${
+                isDark ? 'bg-white/5 border-white/10 shadow-black/20' : 'bg-white/40 border-white/40 shadow-black/2'
+              }`}
             >
               <XCircle className="w-8 h-8 text-orange-500 mb-5" />
               <h4 className="font-bold text-lg mb-3">Execution Failure</h4>
-              <p className="text-sm text-gray-500 leading-relaxed">Unreliable agents failing critical cross-chain tasks or deviating from objectives.</p>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Unreliable agents failing critical cross-chain tasks or deviating from objectives.</p>
             </motion.div>
           </div>
         </div>
         
         <div className="relative">
-          <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/5 to-transparent blur-3xl -z-10" />
-          <div className="bg-black/2 backdrop-blur-xl border border-black/5 rounded-[40px] p-8 overflow-hidden">
+          <div className={`absolute inset-0 blur-3xl -z-10 ${isDark ? 'bg-linear-to-b from-transparent via-white/3 to-transparent' : 'bg-linear-to-b from-transparent via-black/5 to-transparent'}`} />
+          <div className={`backdrop-blur-xl border rounded-[40px] p-8 overflow-hidden ${
+            isDark ? 'bg-white/5 border-white/10' : 'bg-black/2 border-black/5'
+          }`}>
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-2">
                 <Activity className={`w-4 h-4 ${isScanning ? 'text-blue-500 animate-spin' : 'text-emerald-500'}`} />
@@ -739,7 +779,7 @@ const TrustFeed = () => {
               <button 
                 onClick={addNewItem}
                 disabled={isScanning}
-                className="p-2 rounded-full hover:bg-black/5 transition-colors disabled:opacity-50"
+                className={`p-2 rounded-full transition-colors disabled:opacity-50 ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
               >
                 <RefreshCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
               </button>
@@ -754,7 +794,11 @@ const TrustFeed = () => {
                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white p-4 rounded-2xl border border-black/5 shadow-sm flex items-center justify-between group hover:border-black/20 transition-all cursor-pointer"
+                    className={`p-4 rounded-2xl border shadow-sm flex items-center justify-between group transition-all cursor-pointer ${
+                      isDark
+                        ? 'bg-white/5 border-white/10 hover:border-white/20'
+                        : 'bg-white border-black/5 hover:border-black/20'
+                    }`}
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-2 h-2 rounded-full ${
@@ -764,9 +808,9 @@ const TrustFeed = () => {
                       }`} />
                       <div>
                         <div className="font-mono text-[10px] font-bold flex items-center gap-2">
-                          {item.id} <ChevronRight className="w-3 h-3 text-gray-300 group-hover:translate-x-1 transition-transform" /> {item.target}
+                          {item.id} <ChevronRight className={`w-3 h-3 group-hover:translate-x-1 transition-transform ${isDark ? 'text-gray-600' : 'text-gray-300'}`} /> {item.target}
                         </div>
-                        <div className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{item.status}</div>
+                        <div className={`text-[10px] font-medium uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{item.status}</div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -776,7 +820,7 @@ const TrustFeed = () => {
                       }`}>
                         {item.score}/100
                       </div>
-                      <div className="text-[8px] font-bold text-gray-300 uppercase">{item.time}</div>
+                      <div className={`text-[8px] font-bold uppercase ${isDark ? 'text-gray-600' : 'text-gray-300'}`}>{item.time}</div>
                     </div>
                   </motion.div>
                 ))}
@@ -790,6 +834,7 @@ const TrustFeed = () => {
 };
 
 const BentoFeatures = () => {
+  const { isDark } = useDarkMode();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -811,9 +856,9 @@ const BentoFeatures = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
         <div className="max-w-xl">
           <h2 className="font-display text-5xl font-bold mb-6">Built for the <br />machine-to-machine era.</h2>
-          <p className="text-gray-500">A modular protocol designed for high-frequency agent interactions.</p>
+          <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>A modular protocol designed for high-frequency agent interactions.</p>
         </div>
-        <button className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all group">
+        <button className={`text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all group ${isDark ? 'text-gray-300' : 'text-black'}`}>
           Explore Ecosystem <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
@@ -821,7 +866,9 @@ const BentoFeatures = () => {
       <div className="grid grid-cols-1 md:grid-cols-6 grid-rows-2 gap-4 h-auto md:h-[600px] relative">
         <motion.div 
           whileHover={{ y: -5, scale: 1.01 }}
-          className="md:col-span-3 bg-white border border-black/5 rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative"
+          className={`md:col-span-3 border rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative ${
+            isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'
+          }`}
         >
           <motion.div 
             style={{
@@ -832,12 +879,14 @@ const BentoFeatures = () => {
             }}
             className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
           />
-          <div className="bg-emerald-50 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all group-hover:rotate-12 relative z-10">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all group-hover:rotate-12 relative z-10 ${
+            isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50'
+          }`}>
             <Zap className="w-6 h-6" />
           </div>
           <div className="relative z-10">
             <h3 className="text-2xl font-bold mb-3">Lightning Fast Oracle</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">Sub-100ms response times globally, built for high-frequency agent interactions and real-time decision making.</p>
+            <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Sub-100ms response times globally, built for high-frequency agent interactions and real-time decision making.</p>
           </div>
         </motion.div>
         
@@ -868,7 +917,9 @@ const BentoFeatures = () => {
         
         <motion.div 
           whileHover={{ y: -5, scale: 1.01 }}
-          className="md:col-span-2 bg-white border border-black/5 rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+          className={`md:col-span-2 border rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer relative overflow-hidden ${
+            isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'
+          }`}
         >
           <motion.div 
             style={{
@@ -879,18 +930,22 @@ const BentoFeatures = () => {
             }}
             className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
           />
-          <div className="bg-blue-50 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all group-hover:-rotate-12 relative z-10">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all group-hover:-rotate-12 relative z-10 ${
+            isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50'
+          }`}>
             <Terminal className="w-6 h-6" />
           </div>
           <div className="relative z-10">
             <h3 className="text-xl font-bold mb-2">Open API</h3>
-            <p className="text-xs text-gray-500">Free, keyless API. Query any agent&apos;s trust score in under 100ms.</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Free, keyless API. Query any agent&apos;s trust score in under 100ms.</p>
           </div>
         </motion.div>
         
         <motion.div 
           whileHover={{ y: -5, scale: 1.01 }}
-          className="md:col-span-4 bg-gray-100 border border-black/5 rounded-[32px] p-8 flex items-center gap-8 group cursor-pointer relative overflow-hidden"
+          className={`md:col-span-4 border rounded-[32px] p-8 flex items-center gap-8 group cursor-pointer relative overflow-hidden ${
+            isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-black/5'
+          }`}
         >
           <motion.div 
             style={{
@@ -901,12 +956,14 @@ const BentoFeatures = () => {
             }}
             className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
           />
-          <div className="bg-white w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 shadow-sm group-hover:rotate-6 transition-transform relative z-10">
+          <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 shadow-sm group-hover:rotate-6 transition-transform relative z-10 ${
+            isDark ? 'bg-white/10' : 'bg-white'
+          }`}>
             <Anchor className="w-10 h-10" />
           </div>
           <div className="relative z-10">
             <h3 className="text-2xl font-bold mb-2">Uniswap v4 Hook</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">TrustGateHook blocks untrusted agents from pool access. The first trust-gated DeFi primitive.</p>
+            <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>TrustGateHook blocks untrusted agents from pool access. The first trust-gated DeFi primitive.</p>
           </div>
         </motion.div>
       </div>
@@ -914,71 +971,79 @@ const BentoFeatures = () => {
   );
 };
 
-const Partners = () => (
-  <section className="py-32 px-6 text-center border-t border-black/5">
-    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-16">INTEGRATED WITH</div>
-    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-40 hover:opacity-100 transition-all">
-      <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-        <img src="/icons/virtuals.png" alt="Virtuals" className="w-12 h-12 rounded-full" />
-        <span className="text-2xl font-display font-bold tracking-tight">Virtuals Protocol</span>
-      </motion.div>
-      <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-        <img src="/icons/uniswap.png" alt="Uniswap" className="w-12 h-12 rounded-full" />
-        <span className="text-2xl font-display font-bold tracking-tight">Uniswap</span>
-      </motion.div>
-      <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-        <img src="/icons/base.png" alt="Base" className="w-12 h-12 rounded-full" />
-        <span className="text-2xl font-display font-bold tracking-tight">Base</span>
-      </motion.div>
-    </div>
-  </section>
-);
+const Partners = () => {
+  const { isDark } = useDarkMode();
+  return (
+    <section className={`py-32 px-6 text-center border-t ${isDark ? 'border-white/10' : 'border-black/5'}`}>
+      <div className={`text-[10px] font-bold uppercase tracking-[0.3em] mb-16 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>INTEGRATED WITH</div>
+      <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-40 hover:opacity-100 transition-all">
+        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
+          <img src="/icons/virtuals.png" alt="Virtuals" className="w-12 h-12 rounded-full" />
+          <span className="text-2xl font-display font-bold tracking-tight">Virtuals Protocol</span>
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
+          <img src="/icons/uniswap.png" alt="Uniswap" className="w-12 h-12 rounded-full" />
+          <span className="text-2xl font-display font-bold tracking-tight">Uniswap</span>
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
+          <img src="/icons/base.png" alt="Base" className="w-12 h-12 rounded-full" />
+          <span className="text-2xl font-display font-bold tracking-tight">Base</span>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
 
-const Footer = () => (
-  <footer className="bg-white pt-32 pb-12 px-8 border-t border-black/5">
-    <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-16 mb-32">
-      <div className="col-span-2">
-        <div className="flex items-center gap-3 mb-8">
-          <img src="/maiat-logo.jpg" alt="Maiat" className="w-8 h-8 rounded-lg" />
-          <span className="font-display font-bold text-2xl tracking-tight">Maiat Protocol</span>
+const Footer = () => {
+  const { isDark } = useDarkMode();
+  return (
+    <footer className={`pt-32 pb-12 px-8 border-t ${isDark ? 'bg-black/20 border-white/10' : 'bg-white border-black/5'}`}>
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-16 mb-32">
+        <div className="col-span-2">
+          <div className="flex items-center gap-3 mb-8">
+            <img src="/maiat-logo.jpg" alt="Maiat" className="w-8 h-8 rounded-lg" />
+            <span className="font-display font-bold text-2xl tracking-tight">Maiat Protocol</span>
+          </div>
+          <p className={`mb-8 max-w-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            The decentralized trust infrastructure for the autonomous agent economy.
+          </p>
+          <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full w-fit border border-blue-100">
+            <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Built on Base</span>
+          </div>
         </div>
-        <p className="text-gray-500 mb-8 max-w-xs leading-relaxed">
-          The decentralized trust infrastructure for the autonomous agent economy.
-        </p>
-        <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full w-fit border border-blue-100">
-          <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-          <span className="text-[10px] font-bold uppercase tracking-widest">Built on Base</span>
+        <div>
+          <h4 className={`text-xs font-bold uppercase tracking-widest mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Product</h4>
+          <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <li><a href="https://app.maiat.io" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Trust Monitor</a></li>
+            <li><a href="https://app.maiat.io/leaderboard" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Leaderboard</a></li>
+            <li><a href="https://app.maiat.io/docs" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Documentation</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className={`text-xs font-bold uppercase tracking-widest mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Developers</h4>
+          <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <li><a href="https://github.com/JhiNResH/maiat-protocol" target="_blank" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>GitHub</a></li>
+            <li><a href="https://app.maiat.io/skill.md" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Skill File</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className={`text-xs font-bold uppercase tracking-widest mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Social</h4>
+          <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <li><a href="https://twitter.com/0xmaiat" target="_blank" className={`transition-colors flex items-center gap-2 ${isDark ? 'hover:text-white' : 'hover:text-black'}`}><Twitter className="w-4 h-4" /> Twitter</a></li>
+          </ul>
         </div>
       </div>
-      <div>
-        <h4 className="text-xs font-bold uppercase tracking-widest text-black mb-8">Product</h4>
-        <ul className="space-y-4 text-sm text-gray-500 font-medium">
-          <li><a href="https://app.maiat.io" className="hover:text-black transition-colors">Trust Monitor</a></li>
-          <li><a href="https://app.maiat.io/leaderboard" className="hover:text-black transition-colors">Leaderboard</a></li>
-          <li><a href="https://app.maiat.io/docs" className="hover:text-black transition-colors">Documentation</a></li>
-        </ul>
+      <div className={`max-w-7xl mx-auto pt-12 border-t flex flex-col md:flex-row items-center justify-between text-[10px] font-bold uppercase tracking-widest gap-6 ${
+        isDark ? 'border-white/10 text-gray-600' : 'border-black/5 text-gray-400'
+      }`}>
+        <p>© 2026 Maiat Protocol</p>
+        <div className="flex gap-8">
+        </div>
       </div>
-      <div>
-        <h4 className="text-xs font-bold uppercase tracking-widest text-black mb-8">Developers</h4>
-        <ul className="space-y-4 text-sm text-gray-500 font-medium">
-          <li><a href="https://github.com/JhiNResH/maiat-protocol" target="_blank" className="hover:text-black transition-colors">GitHub</a></li>
-          <li><a href="https://app.maiat.io/skill.md" className="hover:text-black transition-colors">Skill File</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="text-xs font-bold uppercase tracking-widest text-black mb-8">Social</h4>
-        <ul className="space-y-4 text-sm text-gray-500 font-medium">
-          <li><a href="https://twitter.com/0xmaiat" target="_blank" className="hover:text-black transition-colors flex items-center gap-2"><Twitter className="w-4 h-4" /> Twitter</a></li>
-        </ul>
-      </div>
-    </div>
-    <div className="max-w-7xl mx-auto pt-12 border-t border-black/5 flex flex-col md:flex-row items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest gap-6">
-      <p>© 2026 Maiat Protocol</p>
-      <div className="flex gap-8">
-      </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 // --- App Transition Overlay ---
 const AppTransition = ({ isActive, onComplete }: { isActive: boolean; onComplete: () => void }) => (
@@ -1005,12 +1070,12 @@ const AppTransition = ({ isActive, onComplete }: { isActive: boolean; onComplete
   </AnimatePresence>
 );
 
-export default function LandingPage() {
+function LandingPageInner() {
+  const { isDark } = useDarkMode();
   const { scrollYProgress } = useScroll();
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<null | { score: number; status: string }>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isDark, setIsDark] = useState(false);
 
   // Intercept all app.maiat.io links for smooth transition
   useEffect(() => {
@@ -1046,7 +1111,7 @@ export default function LandingPage() {
       <BackgroundEffect />
       <TrustGrid />
       <CursorSpotlight />
-      <Navbar isDark={isDark} toggleDark={() => setIsDark(!isDark)} />
+      <Navbar />
       <Hero onScan={startScan} />
       <TrustFeed />
       <BentoFeatures />
@@ -1059,16 +1124,16 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-110 flex items-center justify-center bg-white/80 backdrop-blur-md"
+            className={`fixed inset-0 z-110 flex items-center justify-center backdrop-blur-md ${isDark ? 'bg-black/80' : 'bg-white/80'}`}
           >
             <div className="text-center">
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="w-20 h-20 border-4 border-black border-t-transparent rounded-full mx-auto mb-8"
+                className={`w-20 h-20 border-4 border-t-transparent rounded-full mx-auto mb-8 ${isDark ? 'border-white' : 'border-black'}`}
               />
               <h3 className="text-2xl font-display font-bold mb-2">Analyzing Agent Behavior</h3>
-              <p className="text-gray-500 font-mono text-sm">Fetching Virtuals ACP job history...</p>
+              <p className={`font-mono text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Fetching Virtuals ACP job history...</p>
             </div>
           </motion.div>
         )}
@@ -1084,10 +1149,12 @@ export default function LandingPage() {
               className="absolute inset-0 bg-black/20 backdrop-blur-sm" 
               onClick={() => setScanResult(null)}
             />
-            <div className="bg-white rounded-[40px] p-12 max-w-md w-full shadow-2xl relative z-10 border border-black/5">
+            <div className={`rounded-[40px] p-12 max-w-md w-full shadow-2xl relative z-10 border ${
+              isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-white border-black/5'
+            }`}>
               <button 
                 onClick={() => setScanResult(null)}
-                className="absolute top-6 right-6 p-2 hover:bg-black/5 rounded-full transition-colors"
+                className={`absolute top-6 right-6 p-2 rounded-full transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
               >
                 <XCircle className="w-6 h-6" />
               </button>
@@ -1100,12 +1167,14 @@ export default function LandingPage() {
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-sm mb-8">
                   {scanResult.status}
                 </div>
-                <p className="text-gray-500 text-sm leading-relaxed mb-8">
+                <p className={`text-sm leading-relaxed mb-8 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   This agent has a consistent history of successful job execution and verified identity on Base.
                 </p>
                 <button 
                   onClick={() => setScanResult(null)}
-                  className="w-full bg-black text-white py-4 rounded-2xl font-bold hover:bg-gray-900 transition-all"
+                  className={`w-full py-4 rounded-2xl font-bold transition-all ${
+                    isDark ? 'bg-white text-black hover:bg-gray-100' : 'bg-black text-white hover:bg-gray-900'
+                  }`}
                 >
                   Close Report
                 </button>
@@ -1115,5 +1184,13 @@ export default function LandingPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <DarkModeProvider>
+      <LandingPageInner />
+    </DarkModeProvider>
   );
 }
