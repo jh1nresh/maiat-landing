@@ -65,7 +65,7 @@ const Navbar = () => {
       <div className="px-6 py-3 flex items-center justify-between rounded-full bg-white/70 backdrop-blur-[60px] saturate-[180%] border border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
         <a href="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0 no-underline">
           <img src="/maiat-logo.jpg" alt="Maiat" className="w-7 h-7 rounded-full shadow-lg" />
-          <span className="font-mono font-bold text-base tracking-widest text-black uppercase">MAIAT</span>
+          <span className="font-mono font-bold text-base tracking-widest text-black uppercase">maiat</span>
         </a>
 
         <motion.div
