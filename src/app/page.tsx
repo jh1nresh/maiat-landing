@@ -6,7 +6,8 @@ import {
   ArrowRight, Zap, Shield, Globe, Anchor, Twitter, 
   Disc as Discord, Send, Activity, Cpu, Lock, Terminal,
   ExternalLink, ChevronRight, CheckCircle2, AlertCircle, XCircle,
-  Search, Fingerprint, ShieldCheck, RefreshCw, User, Bot, Copy, Check
+  Search, Fingerprint, ShieldCheck, RefreshCw, User, Bot, Copy, Check,
+  Sun, Moon
 } from 'lucide-react';
 
 // --- Components ---
@@ -20,7 +21,7 @@ const dockLinks = [
   { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
 ];
 
-function DockItem({ item, mouseX }: { item: { label: string; href: string }; mouseX: ReturnType<typeof useMotionValue<number>> }) {
+function DockItem({ item, mouseX, isDark }: { item: { label: string; href: string }; mouseX: ReturnType<typeof useMotionValue<number>>; isDark: boolean }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const distance = useTransform(mouseX, (val: number) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
@@ -31,8 +32,8 @@ function DockItem({ item, mouseX }: { item: { label: string; href: string }; mou
 
   return (
     <a ref={ref} href={item.href} className="relative no-underline">
-      <motion.div style={{ scale: springScale }} className="px-4 py-2 rounded-full">
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 hover:text-black transition-colors">
+      <motion.div style={{ scale: springScale }} className="px-5 py-2 rounded-full">
+        <span className={`text-[10px] font-bold uppercase tracking-[0.15em] transition-colors ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-black'}`}>
           {item.label}
         </span>
       </motion.div>
@@ -40,7 +41,7 @@ function DockItem({ item, mouseX }: { item: { label: string; href: string }; mou
   );
 }
 
-const Navbar = () => {
+const Navbar = ({ isDark, toggleDark }: { isDark: boolean; toggleDark: () => void }) => {
   const mouseX = useMotionValue(-Infinity);
   const [navVisible, setNavVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -57,36 +58,49 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      initial={{ y: -100, x: '-50%', opacity: 0 }}
-      animate={{ y: navVisible ? 0 : -100, x: '-50%', opacity: navVisible ? 1 : 0 }}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: navVisible ? 0 : -100, opacity: navVisible ? 1 : 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-6 left-1/2 z-50 w-[95%] max-w-5xl"
+      className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl rounded-full px-6 py-3 flex items-center justify-between border transition-all duration-500 ${
+        isDark
+          ? 'bg-white/5 border-white/[0.08] shadow-[inset_0_0_30px_rgba(255,255,255,0.02),0_30px_100px_rgba(0,0,0,0.3)]'
+          : 'bg-white/70 border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.05)]'
+      }`}
+      style={{ backdropFilter: 'blur(60px) saturate(180%)', WebkitBackdropFilter: 'blur(60px) saturate(180%)' }}
     >
-      <div className="px-6 py-3 flex items-center justify-between rounded-full bg-white/70 backdrop-blur-[60px] saturate-[180%] border border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-        <a href="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0 no-underline">
-          <img src="/maiat-logo.jpg" alt="Maiat" className="w-7 h-7 rounded-full shadow-lg" />
-          <span className="font-mono font-bold text-base tracking-widest text-black">maiat</span>
-        </a>
+      <a href="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0 no-underline">
+        <img src="/maiat-logo.jpg" alt="Maiat" className="w-7 h-7 rounded-full shadow-lg" />
+        <span className={`font-mono font-bold text-base tracking-widest ${isDark ? 'text-white' : 'text-black'}`}>maiat</span>
+      </a>
 
-        <motion.div
-          className="hidden md:flex items-center gap-0.5"
-          onMouseMove={(e) => mouseX.set(e.clientX)}
-          onMouseLeave={() => mouseX.set(-Infinity)}
-        >
-          {dockLinks.map((item) => (
-            <DockItem key={item.label} item={item} mouseX={mouseX} />
-          ))}
-        </motion.div>
+      <motion.div
+        className="hidden md:flex items-center gap-0.5"
+        onMouseMove={(e) => mouseX.set(e.clientX)}
+        onMouseLeave={() => mouseX.set(-Infinity)}
+      >
+        {dockLinks.map((item) => (
+          <DockItem key={item.label} item={item} mouseX={mouseX} isDark={isDark} />
+        ))}
+      </motion.div>
 
-        <div className="hidden md:flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
-            <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse bg-emerald-500 shadow-[0_0_6px_rgb(16,185,129)]" />
-            Live on Base
-          </div>
-          <a href="https://app.maiat.io" className="bg-black text-white px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] hover:opacity-90 transition-all shadow-lg no-underline">
-            Launch App
-          </a>
+      <div className="hidden md:flex items-center gap-3">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+          <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse bg-emerald-500 shadow-[0_0_6px_rgb(16,185,129)]" />
+          Live on Base
         </div>
+        <button
+          onClick={toggleDark}
+          className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all active:scale-90 ${
+            isDark ? 'bg-white/10 border-white/10 text-yellow-400' : 'bg-black/5 border-black/5 text-gray-500'
+          }`}
+        >
+          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+        <a href="https://app.maiat.io" className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] hover:opacity-90 transition-all shadow-lg no-underline ${
+          isDark ? 'bg-white text-black' : 'bg-black text-white'
+        }`}>
+          Launch App
+        </a>
       </div>
     </motion.nav>
   );
@@ -996,6 +1010,7 @@ export default function LandingPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<null | { score: number; status: string }>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
   // Intercept all app.maiat.io links for smooth transition
   useEffect(() => {
@@ -1021,17 +1036,17 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFB] text-black selection:bg-black selection:text-white relative">
+    <div className={`min-h-screen transition-colors duration-700 selection:bg-black selection:text-white relative ${isDark ? 'bg-[#0A0A0A] text-white' : 'bg-[#FDFDFB] text-black'}`}>
       <AppTransition isActive={isTransitioning} onComplete={() => {}} />
       <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-black origin-left z-100"
+        className={`fixed top-0 left-0 right-0 h-1 origin-left z-100 ${isDark ? 'bg-white' : 'bg-black'}`}
         style={{ scaleX: scrollYProgress }}
       />
       
       <BackgroundEffect />
       <TrustGrid />
       <CursorSpotlight />
-      <Navbar />
+      <Navbar isDark={isDark} toggleDark={() => setIsDark(!isDark)} />
       <Hero onScan={startScan} />
       <TrustFeed />
       <BentoFeatures />
