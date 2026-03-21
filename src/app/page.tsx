@@ -568,7 +568,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                 </div>
               </div>
               <a 
-                href="https://app.maiat.io/verify"
+                href="https://app.maiat.io"
                 className={`mt-8 group relative px-6 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all overflow-hidden active:scale-95 shadow-xl w-full max-w-md mx-auto no-underline ${
                   isDark ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'
                 }`}
@@ -644,7 +644,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                   Read Full Docs <ArrowRight className="w-3.5 h-3.5" />
                 </a>
                 <div className={`flex-1 rounded-xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-[#f5f5f5]'}`}>
-                  <a href="https://app.maiat.io/verify" className={`w-full h-full py-3.5 rounded-xl font-bold text-sm transition-colors block text-center no-underline ${
+                  <a href="https://app.maiat.io" className={`w-full h-full py-3.5 rounded-xl font-bold text-sm transition-colors block text-center no-underline ${
                     isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-[#eaeaea]'
                   }`} style={{lineHeight: '3.5rem'}}>
                     Explore Agents
