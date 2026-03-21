@@ -398,6 +398,18 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [mode, setMode] = useState<'human' | 'agent'>('human');
   const [copied, setCopied] = useState(false);
+  const [liveStats, setLiveStats] = useState<{ agentsIndexed: number; totalQueries: number } | null>(null);
+
+  useEffect(() => {
+    fetch('https://app.maiat.io/api/v1/stats')
+      .then(r => r.json())
+      .then(d => {
+        if (d?.agentsIndexed || d?.totalQueries) {
+          setLiveStats({ agentsIndexed: d.agentsIndexed ?? 0, totalQueries: d.totalQueries ?? 0 });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText('GET /api/v1/agent/{address}');
@@ -556,7 +568,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                 </div>
               </div>
               <a 
-                href="https://app.maiat.io/monitor"
+                href="https://app.maiat.io/verify"
                 className={`mt-8 group relative px-6 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all overflow-hidden active:scale-95 shadow-xl w-full max-w-md mx-auto no-underline ${
                   isDark ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'
                 }`}
@@ -632,7 +644,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                   Read Full Docs <ArrowRight className="w-3.5 h-3.5" />
                 </a>
                 <div className={`flex-1 rounded-xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-[#f5f5f5]'}`}>
-                  <a href="https://app.maiat.io/monitor" className={`w-full h-full py-3.5 rounded-xl font-bold text-sm transition-colors block text-center no-underline ${
+                  <a href="https://app.maiat.io/verify" className={`w-full h-full py-3.5 rounded-xl font-bold text-sm transition-colors block text-center no-underline ${
                     isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-[#eaeaea]'
                   }`} style={{lineHeight: '3.5rem'}}>
                     Explore Agents
@@ -646,8 +658,8 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto relative z-10">
         {[
-          { label: 'Agents Verified', value: '17,402', sub: '+12% this week', icon: <Cpu className="w-4 h-4" /> },
-          { label: 'Total Volume', value: '$3.2M', sub: 'Last 24h', icon: <Activity className="w-4 h-4" /> },
+          { label: 'Agents Indexed', value: liveStats ? liveStats.agentsIndexed.toLocaleString() : '—', sub: 'ACP verified', icon: <Cpu className="w-4 h-4" /> },
+          { label: 'Total Queries', value: liveStats ? liveStats.totalQueries.toLocaleString() : '—', sub: 'Trust lookups', icon: <Activity className="w-4 h-4" /> },
           { label: 'Avg. Latency', value: '84ms', sub: 'Global Edge', icon: <Zap className="w-4 h-4" /> },
         ].map((stat, i) => (
           <motion.div 
