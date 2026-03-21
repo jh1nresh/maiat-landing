@@ -1022,29 +1022,43 @@ const Footer = () => {
 };
 
 // --- App Transition Overlay ---
-const AppTransition = ({ isActive, onComplete }: { isActive: boolean; onComplete: () => void }) => (
-  <AnimatePresence>
-    {isActive && (
-      <motion.div
-        className="fixed inset-0 z-9999 flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, backgroundColor: '#050508' }}
-        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-        onAnimationComplete={onComplete}
-      >
+const AppTransition = ({ isActive, onComplete }: { isActive: boolean; onComplete: () => void }) => {
+  const { isDark } = useDarkMode();
+  return (
+    <AnimatePresence>
+      {isActive && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-center"
+          className={`fixed inset-0 z-[9999] flex items-center justify-center ${isDark ? 'bg-[#0A0A0A]' : 'bg-white'}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          onAnimationComplete={onComplete}
         >
-          <div className="w-12 h-12 border-2 border-[#d4a017] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[#d4a017] text-sm font-semibold tracking-widest uppercase">Entering Maiat</p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="text-center flex flex-col items-center"
+          >
+            <motion.div
+              className={`w-8 h-8 rounded-full border-2 ${isDark ? 'border-white/20 border-t-white' : 'border-black/10 border-t-black'}`}
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+            />
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className={`mt-4 text-[10px] font-bold tracking-[0.2em] uppercase ${isDark ? 'text-white/40' : 'text-black/30'}`}
+            >
+              maiat.io
+            </motion.p>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
+      )}
+    </AnimatePresence>
+  );
+};
 
 function LandingPageInner() {
   const { isDark } = useDarkMode();
