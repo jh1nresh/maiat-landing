@@ -10,7 +10,7 @@ interface DarkModeContextType {
 const DarkModeContext = createContext<DarkModeContextType>({ isDark: false, toggleDark: () => {} });
 
 export function DarkModeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   return (
     <DarkModeContext.Provider value={{ isDark, toggleDark: () => setIsDark(!isDark) }}>
       {children}
