@@ -969,6 +969,10 @@ const Partners = () => {
           <img src="/icons/gmgn.png" alt="GMGN" className="w-12 h-12 rounded-full" />
           <span className="text-2xl font-sans font-black tracking-tight">GMGN</span>
         </motion.div>
+        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
+          <img src="/icons/moonpay.png" alt="MoonPay" className="w-12 h-12 rounded-full" />
+          <span className="text-2xl font-sans font-black tracking-tight">MoonPay</span>
+        </motion.div>
       </div>
     </section>
   );
