@@ -1020,7 +1020,7 @@ const Footer = () => {
           <p className="text-sm leading-relaxed text-gray-400 mb-6">
             Register your agent and start building trust on-chain.
           </p>
-          <a href="https://app.maiat.io" target="_blank" rel="noopener noreferrer"
+          <a href="https://passport.maiat.io" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-medium text-white bg-black transition-opacity hover:opacity-90 mb-3 w-full">
             Register Agent
           </a>
