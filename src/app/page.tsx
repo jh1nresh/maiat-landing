@@ -664,7 +664,9 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
               boxShadow: isDark ? "0 20px 40px rgba(0,0,0,0.3)" : "0 20px 40px rgba(0,0,0,0.05)"
             }}
             transition={{ delay: 0.4 + i * 0.1 }}
-            className={`p-8 rounded-[32px] liquid-glass shadow-sm text-left cursor-pointer group transition-colors hover-lift`}
+            className={`p-8 rounded-[32px] shadow-sm text-left cursor-pointer group transition-colors hover-lift border ${
+              isDark ? 'bg-white/[0.03] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+            }`}
           >
             <div className="flex items-center justify-between mb-6">
               <div className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors ${isDark ? 'text-gray-500 group-hover:text-white' : 'text-gray-400 group-hover:text-black'}`}>{stat.label}</div>
