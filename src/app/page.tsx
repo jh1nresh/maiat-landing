@@ -440,7 +440,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.95] text-balance cursor-default"
+          className="font-sans text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[0.95] text-balance cursor-default"
         >
           The trust layer for <br />
           <span className={`bg-gradient-to-b ${isDark ? 'from-white to-gray-500' : 'from-black to-gray-700'} bg-clip-text text-transparent`}>agentic intelligence.</span>
@@ -505,7 +505,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
         transition={{ duration: 0.8, delay: 0.25 }}
         className="flex justify-center mb-10 relative z-10"
       >
-        <div className={`border rounded-xl p-1 inline-flex gap-1 shadow-sm ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/6'}`}>
+        <div className="liquid-glass rounded-xl p-1 inline-flex gap-1 shadow-sm">
           <button
             onClick={() => setMode('human')}
             className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
@@ -544,24 +544,18 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className={`rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between ${
-                isDark
-                  ? 'bg-white/5 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.3)]'
-                  : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]'
-              }`}
+              className="rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between liquid-glass shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
             >
               <div>
                 <h3 className={`text-xl font-bold mb-6 text-center ${isDark ? 'text-white' : 'text-black'}`}>
                   Verify Trust Before You Transact.
                 </h3>
                 <div className="relative mb-6 w-full max-w-md mx-auto">
-                  <div className={`font-mono rounded-xl p-4 sm:p-5 text-[13px] sm:text-[14px] leading-relaxed text-center ${
-                    isDark ? 'bg-white/5 text-gray-400' : 'bg-[#f5f5f5] text-[#5c5c6b]'
-                  }`}>
+                  <div className="font-mono rounded-xl p-4 sm:p-5 text-[13px] sm:text-[14px] leading-relaxed text-center" style={{ background: 'var(--card-bg)', color: 'var(--text-secondary)' }}>
                     Check any AI agent&apos;s behavioral trust score — powered by real Virtuals ACP job history on Base.
                   </div>
                 </div>
-                <div className={`space-y-4 font-medium text-left text-sm sm:text-base max-w-md mx-auto px-2 sm:px-6 ${isDark ? 'text-gray-400' : 'text-[#5c5c6b]'}`}>
+                <div className="space-y-4 font-medium text-left text-sm sm:text-base max-w-md mx-auto px-2 sm:px-6" style={{ color: 'var(--text-secondary)' }}>
                   <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>1.</span> <span>Enter any EVM wallet address</span></div>
                   <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>2.</span> <span>Get a trust score (0–100) and verdict</span></div>
                   <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>3.</span> <span>Decide whether to proceed, caution, or avoid</span></div>
@@ -584,11 +578,7 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              className={`rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between relative overflow-hidden ${
-                isDark
-                  ? 'bg-white/5 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.3)]'
-                  : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]'
-              }`}
+              className="rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between relative overflow-hidden liquid-glass shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
             >
               <div>
                 <div className="relative z-10 flex items-center justify-center gap-2 mb-6">
@@ -601,15 +591,15 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                 </div>
                 
                 <div className="relative z-10 mb-6 w-full max-w-md mx-auto">
-                  <div className={`rounded-xl p-4 sm:p-5 group/copy relative ${isDark ? 'bg-white/5' : 'bg-[#f5f5f5]'}`}>
-                    <div className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-center ${isDark ? 'text-gray-500' : 'text-[#8a8a99]'}`}>ADD TO YOUR AGENT</div>
+                  <div className="rounded-xl p-4 sm:p-5 group/copy relative" style={{ background: 'var(--card-bg)' }}>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-center" style={{ color: 'var(--text-secondary)' }}>ADD TO YOUR AGENT</div>
                     <div className="font-mono text-[13px] sm:text-[14px] leading-relaxed text-center text-[#00D19D] wrap-break-word">
                       Read https://app.maiat.io/skill.md <br className="hidden sm:block" /> and follow the instructions
                     </div>
                   </div>
                 </div>
                 
-                <div className={`relative z-10 space-y-4 mb-6 text-sm sm:text-[15px] font-medium max-w-md mx-auto px-2 ${isDark ? 'text-gray-400' : 'text-[#5c5c6b]'}`}>
+                <div className="relative z-10 space-y-4 mb-6 text-sm sm:text-[15px] font-medium max-w-md mx-auto px-2" style={{ color: 'var(--text-secondary)' }}>
                   <div className="flex gap-3 items-start">
                     <span className="text-[#00D19D] font-bold mt-0.5">1</span> 
                     <span>Read the skill file above — it teaches your agent the Maiat API</span>
@@ -624,8 +614,8 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
                   </div>
                 </div>
 
-                <div className={`relative z-10 rounded-xl p-4 sm:p-5 mb-6 max-w-md mx-auto text-center ${isDark ? 'bg-white/5' : 'bg-[#f5f5f5]'}`}>
-                  <div className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-3 ${isDark ? 'text-gray-500' : 'text-[#8a8a99]'}`}>QUICK API EXAMPLE</div>
+                <div className="relative z-10 rounded-xl p-4 sm:p-5 mb-6 max-w-md mx-auto text-center" style={{ background: 'var(--card-bg)' }}>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--text-secondary)' }}>QUICK API EXAMPLE</div>
                   <div className="font-mono text-[12px] sm:text-[13px] leading-relaxed">
                     <div className="text-[#00D19D] mb-1">
                       GET /api/v1/agent/0x742d35Cc...
@@ -674,15 +664,13 @@ const Hero = ({ onScan }: { onScan: () => void }) => {
               boxShadow: isDark ? "0 20px 40px rgba(0,0,0,0.3)" : "0 20px 40px rgba(0,0,0,0.05)"
             }}
             transition={{ delay: 0.4 + i * 0.1 }}
-            className={`p-8 rounded-[32px] backdrop-blur-xl border shadow-sm text-left cursor-pointer group transition-colors ${
-              isDark ? 'bg-white/5 border-white/10' : 'bg-white/30 border-white/40'
-            }`}
+            className={`p-8 rounded-[32px] liquid-glass shadow-sm text-left cursor-pointer group transition-colors hover-lift`}
           >
             <div className="flex items-center justify-between mb-6">
               <div className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors ${isDark ? 'text-gray-500 group-hover:text-white' : 'text-gray-400 group-hover:text-black'}`}>{stat.label}</div>
               <div className="text-gray-300 group-hover:text-blue-500 transition-colors group-hover:scale-110 duration-300">{stat.icon}</div>
             </div>
-            <div className="text-4xl font-display font-bold mb-2 tracking-tight">{stat.value}</div>
+            <div className="text-4xl font-sans font-black mb-2 tracking-tight">{stat.value}</div>
             <div className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1">
               <span className="w-1 h-1 rounded-full bg-emerald-500" />
               {stat.sub}
@@ -735,9 +723,9 @@ const TrustFeed = () => {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/10 text-[10px] font-bold text-red-600 uppercase tracking-widest mb-6">
             The Problem
           </div>
-          <h2 className="font-display text-5xl font-bold mb-8 leading-tight">
+          <h2 className="font-sans text-5xl font-black mb-8 leading-tight tracking-tight">
             Trust is the bottleneck of <br />
-            <span className="italic serif">autonomous agents.</span>
+            <span className="italic">autonomous agents.</span>
           </h2>
           <p className={`text-lg leading-relaxed mb-10 text-gray-400`}>
             As AI agents begin to transact independently, the risk of unverified identity and malicious execution grows. Maiat provides a cryptographic trust score for every agent interaction.
@@ -745,32 +733,26 @@ const TrustFeed = () => {
           <div className="grid grid-cols-2 gap-6">
             <motion.div 
               whileHover={{ scale: 1.05, y: -5 }}
-              className={`p-8 rounded-3xl backdrop-blur-xl border shadow-xl ${
-                isDark ? 'bg-white/5 border-white/10 shadow-black/20' : 'bg-white/40 border-white/40 shadow-black/2'
-              }`}
+              className="p-8 rounded-3xl liquid-glass shadow-xl"
             >
               <AlertCircle className="w-8 h-8 text-red-500 mb-5" />
               <h4 className="font-bold text-lg mb-3">Identity Spoofing</h4>
-              <p className={`text-sm leading-relaxed text-gray-400`}>Agents mimicking trusted entities to drain liquidity and exploit protocols.</p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Agents mimicking trusted entities to drain liquidity and exploit protocols.</p>
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, y: -5 }}
-              className={`p-8 rounded-3xl backdrop-blur-xl border shadow-xl ${
-                isDark ? 'bg-white/5 border-white/10 shadow-black/20' : 'bg-white/40 border-white/40 shadow-black/2'
-              }`}
+              className="p-8 rounded-3xl liquid-glass shadow-xl"
             >
               <XCircle className="w-8 h-8 text-orange-500 mb-5" />
               <h4 className="font-bold text-lg mb-3">Execution Failure</h4>
-              <p className={`text-sm leading-relaxed text-gray-400`}>Unreliable agents failing critical cross-chain tasks or deviating from objectives.</p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Unreliable agents failing critical cross-chain tasks or deviating from objectives.</p>
             </motion.div>
           </div>
         </div>
         
         <div className="relative">
           <div className={`absolute inset-0 blur-3xl -z-10 ${isDark ? 'bg-linear-to-b from-transparent via-white/3 to-transparent' : 'bg-linear-to-b from-transparent via-black/5 to-transparent'}`} />
-          <div className={`backdrop-blur-xl border rounded-[40px] p-8 overflow-hidden ${
-            isDark ? 'bg-white/5 border-white/10' : 'bg-black/2 border-black/5'
-          }`}>
+          <div className="liquid-glass rounded-[40px] p-8 overflow-hidden">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-2">
                 <Activity className={`w-4 h-4 ${isScanning ? 'text-blue-500 animate-spin' : 'text-emerald-500'}`} />
@@ -796,11 +778,7 @@ const TrustFeed = () => {
                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className={`p-4 rounded-2xl border shadow-sm flex items-center justify-between group transition-all cursor-pointer ${
-                      isDark
-                        ? 'bg-white/5 border-white/10 hover:border-white/20'
-                        : 'bg-white border-black/5 hover:border-black/20'
-                    }`}
+                    className="p-4 rounded-2xl liquid-glass shadow-sm flex items-center justify-between group transition-all cursor-pointer hover:border-white/20"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-2 h-2 rounded-full ${
@@ -857,7 +835,7 @@ const BentoFeatures = () => {
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
         <div className="max-w-xl">
-          <h2 className="font-display text-5xl font-bold mb-6">Built for the <br />machine-to-machine era.</h2>
+          <h2 className="font-sans text-5xl font-black mb-6 tracking-tight">Built for the <br />machine-to-machine era.</h2>
           <p className={"text-gray-400"}>A modular protocol designed for high-frequency agent interactions.</p>
         </div>
         <button className={`text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all group ${isDark ? 'text-gray-300' : 'text-black'}`}>
@@ -868,9 +846,7 @@ const BentoFeatures = () => {
       <div className="grid grid-cols-1 md:grid-cols-6 grid-rows-2 gap-4 h-auto md:h-[600px] relative">
         <motion.div 
           whileHover={{ y: -5, scale: 1.01 }}
-          className={`md:col-span-3 border rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative ${
-            isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'
-          }`}
+          className="md:col-span-3 liquid-glass rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative"
         >
           <motion.div 
             style={{
@@ -919,9 +895,7 @@ const BentoFeatures = () => {
         
         <motion.div 
           whileHover={{ y: -5, scale: 1.01 }}
-          className={`md:col-span-2 border rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer relative overflow-hidden ${
-            isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'
-          }`}
+          className="md:col-span-2 liquid-glass rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
         >
           <motion.div 
             style={{
@@ -945,9 +919,7 @@ const BentoFeatures = () => {
         
         <motion.div 
           whileHover={{ y: -5, scale: 1.01 }}
-          className={`md:col-span-4 border rounded-[32px] p-8 flex items-center gap-8 group cursor-pointer relative overflow-hidden ${
-            isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-black/5'
-          }`}
+          className="md:col-span-4 liquid-glass rounded-[32px] p-8 flex items-center gap-8 group cursor-pointer relative overflow-hidden"
         >
           <motion.div 
             style={{
@@ -981,15 +953,15 @@ const Partners = () => {
       <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-40 hover:opacity-100 transition-all">
         <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
           <img src="/icons/virtuals.png" alt="Virtuals" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-display font-bold tracking-tight">Virtuals Protocol</span>
+          <span className="text-2xl font-sans font-black tracking-tight">Virtuals Protocol</span>
         </motion.div>
         <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
           <img src="/icons/uniswap.png" alt="Uniswap" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-display font-bold tracking-tight">Uniswap</span>
+          <span className="text-2xl font-sans font-black tracking-tight">Uniswap</span>
         </motion.div>
         <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
           <img src="/icons/base.png" alt="Base" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-display font-bold tracking-tight">Base</span>
+          <span className="text-2xl font-sans font-black tracking-tight">Base</span>
         </motion.div>
       </div>
     </section>
@@ -999,18 +971,18 @@ const Partners = () => {
 const Footer = () => {
   const { isDark } = useDarkMode();
   return (
-    <footer className={`pt-32 pb-12 px-8 border-t ${isDark ? 'bg-black/20 border-white/10' : 'bg-white border-black/5'}`}>
+    <footer className="pt-32 pb-12 px-8 border-t" style={{ borderColor: 'var(--border-color)', background: 'rgba(0,0,0,0.15)' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-16 mb-32">
         <div className="col-span-2">
           <div className="flex items-center gap-3 mb-8">
             <img src="/maiat-logo.jpg" alt="Maiat" className="w-8 h-8 rounded-lg" />
-            <span className="font-display font-bold text-2xl tracking-tight">Maiat Protocol</span>
+            <span className="font-sans font-black text-2xl tracking-tight">Maiat Protocol</span>
           </div>
           <p className={`mb-8 max-w-xs leading-relaxed text-gray-400`}>
             The decentralized trust infrastructure for the autonomous agent economy.
           </p>
-          <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full w-fit border border-blue-100">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full w-fit border border-[#6d8aff]/30 text-[#6d8aff] bg-[#6d8aff]/5">
+            <div className="w-2 h-2 bg-[#6d8aff] rounded-full animate-pulse" />
             <span className="text-[10px] font-bold uppercase tracking-widest">Built on Base</span>
           </div>
         </div>
@@ -1079,6 +1051,15 @@ function LandingPageInner() {
   const [scanResult, setScanResult] = useState<null | { score: number; status: string }>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Apply dark class to html element for CSS variable switching
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
+
   // Intercept all app.maiat.io links for smooth transition
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -1103,7 +1084,7 @@ function LandingPageInner() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-700 selection:bg-black selection:text-white relative ${isDark ? 'bg-[#0A0A0A] text-white' : 'bg-[#FDFDFB] text-black'}`}>
+    <div className={`min-h-screen transition-colors duration-700 selection:bg-black selection:text-white relative atmosphere`} style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }}>
       <AppTransition isActive={isTransitioning} onComplete={() => {}} />
       <motion.div 
         className={`fixed top-0 left-0 right-0 h-1 origin-left z-100 ${isDark ? 'bg-white' : 'bg-black'}`}
@@ -1134,7 +1115,7 @@ function LandingPageInner() {
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className={`w-20 h-20 border-4 border-t-transparent rounded-full mx-auto mb-8 ${isDark ? 'border-white' : 'border-black'}`}
               />
-              <h3 className="text-2xl font-display font-bold mb-2">Analyzing Agent Behavior</h3>
+              <h3 className="text-2xl font-sans font-black mb-2 tracking-tight">Analyzing Agent Behavior</h3>
               <p className={`font-mono text-sm text-gray-400`}>Fetching Virtuals ACP job history...</p>
             </div>
           </motion.div>
@@ -1164,8 +1145,8 @@ function LandingPageInner() {
                 <div className="w-24 h-24 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-6">
                   <ShieldCheck className="w-12 h-12 text-emerald-500" />
                 </div>
-                <h3 className="text-3xl font-display font-bold mb-2">Verification Complete</h3>
-                <div className="text-6xl font-display font-bold text-emerald-600 mb-4">{scanResult.score}</div>
+                <h3 className="text-3xl font-sans font-black mb-2 tracking-tight">Verification Complete</h3>
+                <div className="text-6xl font-sans font-black text-emerald-600 mb-4 tracking-tight">{scanResult.score}</div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-sm mb-8">
                   {scanResult.status}
                 </div>

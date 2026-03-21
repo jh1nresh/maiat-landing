@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({ 
@@ -7,9 +7,9 @@ const inter = Inter({
   variable: '--font-sans',
 });
 
-const spaceGrotesk = Space_Grotesk({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-display',
+  variable: '--font-mono',
 });
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans" suppressHydrationWarning>{children}</body>
     </html>
   );
