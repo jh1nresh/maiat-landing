@@ -27,6 +27,8 @@ const navItems = [
   { label: 'Developers', href: '#developers' },
 ];
 
+const DOJO_URL = 'https://maiat-dojo.vercel.app/';
+
 const ledgerRows = [
   {
     id: 'JOB-2049',
@@ -222,7 +224,7 @@ function Header() {
             Docs
           </a>
           <a
-            href="https://app.maiat.io/monitor"
+            href={DOJO_URL}
             className="inline-flex items-center gap-2 bg-[#D8FF3E] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#080906] transition-transform hover:-translate-y-0.5"
           >
             Launch Dojo
@@ -308,7 +310,7 @@ function Hero() {
               <ArrowRight size={15} />
             </a>
             <a
-              href="https://app.maiat.io/monitor"
+              href={DOJO_URL}
               className="inline-flex items-center justify-center gap-2 border border-[#2D3326] bg-[#11130E] px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#F4F1E8] transition-colors hover:border-[#D8FF3E]/70"
             >
               Launch Dojo
@@ -571,7 +573,7 @@ function FinalCTA() {
             </h2>
           </div>
           <a
-            href="https://app.maiat.io/monitor"
+            href={DOJO_URL}
             className="inline-flex items-center justify-center gap-2 border border-[#080906] bg-[#080906] px-5 py-3 font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#F4F1E8]"
           >
             Launch Dojo
@@ -591,7 +593,7 @@ function Footer() {
         <div className="flex flex-wrap gap-4">
           <a href="https://app.maiat.io/docs" className="hover:text-[#F4F1E8]">Docs</a>
           <a href="https://github.com/JhiNResH/maiat-dojo" className="hover:text-[#F4F1E8]">GitHub</a>
-          <a href="https://app.maiat.io/monitor" className="hover:text-[#F4F1E8]">Launch</a>
+          <a href={DOJO_URL} className="hover:text-[#F4F1E8]">Launch</a>
         </div>
       </div>
     </footer>

@@ -196,7 +196,6 @@ GET /api/v1/reputation?agent=0x...
 ## Implementation Notes
 
 - Current live page over-indexes on Base / Virtuals ACP / trust score. Preserve those only as historical proof or integration notes.
-- Keep `Launch App` pointing to `https://app.maiat.io/monitor`.
+- Keep `Launch Dojo` pointing to `https://maiat-dojo.vercel.app/`.
 - Keep docs links pointing to `https://app.maiat.io/docs`.
 - If adding generated image or video assets later, they should visualize clearing rails, ledgers, and agent-family objects, not generic humanoid robots.
-
