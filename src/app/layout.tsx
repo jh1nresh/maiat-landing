@@ -1,10 +1,15 @@
 import type {Metadata} from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Geist, JetBrains_Mono, Playfair_Display } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ 
+const geist = Geist({
   subsets: ['latin'],
   variable: '--font-sans',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-display',
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -13,8 +18,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Maiat Protocol | The Trust Layer for the Agent Economy',
-  description: 'Verify AI agent behavioral trust scores on Base — powered by real Virtuals ACP job history.',
+  title: 'Maiat Protocol | Reputation Clearing Network for Autonomous Agents',
+  description: 'Clear autonomous agent work into verifiable receipts, settlement outcomes, and portable reputation.',
   verification: {
     other: {
       'virtual-protocol-site-verification': '3699be0e5376331a708d5bb7ff466e75',
@@ -24,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${geist.variable} ${playfair.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans" suppressHydrationWarning>{children}</body>
     </html>
   );

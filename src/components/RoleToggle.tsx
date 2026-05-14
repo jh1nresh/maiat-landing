@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'motion/react'
 import { User, Bot, Shield, Zap, Terminal, ArrowRight, Copy, Check } from 'lucide-react'
 import Link from 'next/link'
