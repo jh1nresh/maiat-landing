@@ -1,1234 +1,682 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'motion/react';
-import {
-  ArrowRight, Zap, Shield, Globe, Anchor, Twitter,
-  Disc as Discord, Send, Activity, Cpu, Lock, Terminal,
-  ExternalLink, ChevronRight, CheckCircle2, AlertCircle, XCircle,
-  Search, Fingerprint, ShieldCheck, RefreshCw, User, Bot, Copy, Check,
-  Sun, Moon, Github
-} from 'lucide-react';
-import { DarkModeProvider, useDarkMode } from './DarkModeContext';
+import {useEffect, useState} from 'react';
+import {useReducedMotion} from 'motion/react';
 
-// --- Components ---
+const stages = ['Delegate', 'Reserve', 'Execute', 'Evaluate', 'Reconcile', 'Receipt'];
 
-// ─── macOS Dock magnification navbar ─────────────────────────────────────────
-
-const dockLinks = [
-  { label: 'Explore', href: 'https://app.maiat.io' },
-  { label: 'Leaderboard', href: 'https://app.maiat.io/leaderboard' },
-  { label: 'Docs', href: 'https://app.maiat.io/docs' },
-  { label: 'GitHub', href: 'https://github.com/JhiNResH/maiat-protocol' },
+const agents = [
+  {
+    id: 'search',
+    name: 'Search Agent',
+    verdict: 'PASS',
+    amount: '$2.00',
+    settlement: 'Captured',
+    detail: 'Accepted search evidence. Capture is selected on the illustrative authorization-capable adapter.',
+  },
+  {
+    id: 'extract',
+    name: 'Extraction Agent',
+    verdict: 'REVISE',
+    amount: '$3.00',
+    settlement: 'Open reservation',
+    detail: 'Revision is requested. The reservation stays open while the child task remains active.',
+  },
+  {
+    id: 'verify',
+    name: 'Verification Agent',
+    verdict: 'FAIL',
+    amount: '$1.00',
+    settlement: 'Released',
+    detail: 'The result is rejected. Its reservation is released back to the shared ancestor budget.',
+  },
 ];
 
-function DockItem({ item, mouseX }: { item: { label: string; href: string }; mouseX: ReturnType<typeof useMotionValue<number>> }) {
-  const { isDark } = useDarkMode();
-  const ref = useRef<HTMLAnchorElement>(null);
-  const distance = useTransform(mouseX, (val: number) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
-  });
-  const scale = useTransform(distance, [-120, 0, 120], [1, 1.35, 1]);
-  const springScale = useSpring(scale, { mass: 0.1, stiffness: 200, damping: 12 });
+const modules = [
+  {
+    number: '01',
+    name: 'Governor',
+    description:
+      'Set revocable limits for parent and child agents. Reserve against every ancestor before a task can spend.',
+  },
+  {
+    number: '02',
+    name: 'Settlement Interlock',
+    description:
+      'Compare the work order, committed evidence, and evaluator verdict before selecting the next payment action.',
+  },
+  {
+    number: '03',
+    name: 'Rail Relay',
+    description:
+      'Normalize authorization, capture, refund, and unknown states from connected payment adapters.',
+  },
+  {
+    number: '04',
+    name: 'Work Receipt',
+    description:
+      'Create an append-only record linking authority, task, artifact, verdict, cost, and observed settlement state.',
+  },
+];
 
+const benchmarkTargets = [
+  '1,000 concurrent child attempts',
+  'No ancestor budget violation',
+  'One local economic effect per idempotency key',
+  'Unknown external states quarantined',
+  'Complete task-to-payment replay',
+];
+
+function BrandMark() {
   return (
-    <a ref={ref} href={item.href} className="relative no-underline">
-      <motion.div style={{ scale: springScale }} className="px-5 py-2 rounded-full">
-        <span className={`text-[10px] font-bold uppercase tracking-[0.15em] transition-colors ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-black'}`}>
-          {item.label}
-        </span>
-      </motion.div>
-    </a>
+    <span className="brand-mark" aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </span>
   );
 }
 
-const Navbar = () => {
-  const { isDark, toggleDark } = useDarkMode();
-  const mouseX = useMotionValue(-Infinity);
-  const [navVisible, setNavVisible] = useState(true);
-  const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const currentY = window.scrollY;
-      setNavVisible(currentY < 50 || currentY < lastScrollY.current);
-      lastScrollY.current = currentY;
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
+function Header() {
   return (
-    <motion.nav
-      initial={{ y: -100, x: '-50%', opacity: 0 }}
-      animate={{ y: navVisible ? 0 : -100, x: '-50%', opacity: navVisible ? 1 : 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-6 left-1/2 z-50 w-[95%] max-w-5xl rounded-full px-6 py-3 flex items-center justify-between border transition-all duration-500 ${
-        isDark
-          ? 'bg-white/5 border-white/[0.08] shadow-[inset_0_0_30px_rgba(255,255,255,0.02),0_30px_100px_rgba(0,0,0,0.3)]'
-          : 'bg-white/70 border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.05)]'
-      }`}
-      style={{ backdropFilter: 'blur(60px) saturate(180%)', WebkitBackdropFilter: 'blur(60px) saturate(180%)' }}
-    >
-      <Link href="/" className="flex items-center gap-2.5 group cursor-pointer shrink-0 no-underline">
-        <img src="/maiat-logo.jpg" alt="Maiat" className="w-7 h-7 rounded-full shadow-lg" />
-        <span className={`font-mono font-bold text-base tracking-widest ${isDark ? 'text-white' : 'text-black'}`}>maiat</span>
-      </Link>
+    <header className="site-header">
+      <div className="shell header-inner">
+        <a className="brand" href="#top" aria-label="Maiat home">
+          <BrandMark />
+          <span>MAIAT</span>
+        </a>
 
-      <motion.div
-        className="hidden md:flex items-center gap-0.5"
-        onMouseMove={(e) => mouseX.set(e.clientX)}
-        onMouseLeave={() => mouseX.set(-Infinity)}
-      >
-        {dockLinks.map((item) => (
-          <DockItem key={item.label} item={item} mouseX={mouseX} />
-        ))}
-      </motion.div>
+        <nav className="desktop-nav" aria-label="Main navigation">
+          <a href="#control">Control</a>
+          <a href="#demo">Demo</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#benchmark">Benchmark</a>
+        </nav>
 
-      <div className="hidden md:flex items-center gap-3">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
-          <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse bg-emerald-500 shadow-[0_0_6px_rgb(16,185,129)]" />
-          Live on Base
-        </div>
-        <button
-          onClick={toggleDark}
-          className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all active:scale-90 ${
-            isDark ? 'bg-white/10 border-white/10 text-yellow-400' : 'bg-black/5 border-black/5 text-gray-500'
-          }`}
+        <a
+          className="button button-small button-dark"
+          href="https://x.com/0xmaiat"
+          target="_blank"
+          rel="noreferrer"
         >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
-        <a href="https://app.maiat.io" className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] hover:opacity-90 transition-all shadow-lg no-underline ${
-          isDark ? 'bg-white text-black' : 'bg-black text-white'
-        }`}>
-          Launch App
+          Join pilot
         </a>
       </div>
-    </motion.nav>
+    </header>
   );
+}
+
+type TransactionPanelProps = {
+  currentStage: number;
+  isRunning: boolean;
+  onRun: () => void;
+  selectedAgent: number;
+  onSelectAgent: (index: number) => void;
 };
 
-const CursorSpotlight = () => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const [hoverType, setHoverType] = useState<string | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
-  const [pulses, setPulses] = useState<{ id: number; x: number; y: number }[]>([]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-
-      const target = e.target as HTMLElement;
-      const interactive = target.closest('button, a, .group, .cursor-pointer');
-
-      if (interactive) {
-        if (!hoverType) {
-          setIsScanning(true);
-          setTimeout(() => setIsScanning(false), 400);
-        }
-
-        if (interactive.textContent?.includes('Verified')) setHoverType('AGENT_DATA');
-        else if (interactive.tagName === 'BUTTON') setHoverType('ACTION_AUTH');
-        else if (interactive.closest('.md\\:grid')) setHoverType('PROTOCOL_SECURE');
-        else setHoverType('TRUST_VERIFIED');
-      } else {
-        setHoverType(null);
-        setIsScanning(false);
-      }
-    };
-
-    const handleClick = (e: MouseEvent) => {
-      const id = Date.now();
-      setPulses(prev => [...prev, { id, x: e.clientX, y: e.clientY }]);
-      setTimeout(() => setPulses(prev => prev.filter(p => p.id !== id)), 1000);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('click', handleClick);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('click', handleClick);
-    };
-  }, [mouseX, mouseY, hoverType]);
-
-  const springConfig = { damping: 25, stiffness: 150 };
-  const smoothX = useSpring(mouseX, springConfig);
-  const smoothY = useSpring(mouseY, springConfig);
+function TransactionPanel({
+  currentStage,
+  isRunning,
+  onRun,
+  selectedAgent,
+  onSelectAgent,
+}: TransactionPanelProps) {
+  const selected = agents[selectedAgent];
+  const evaluated = currentStage >= 3;
+  const reconciled = currentStage >= 4;
 
   return (
-    <>
-      {/* Verification Pulses */}
-      {pulses.map(pulse => (
-        <motion.div
-          key={pulse.id}
-          initial={{ opacity: 0.5, scale: 0 }}
-          animate={{ opacity: 0, scale: 4 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          style={{ left: pulse.x, top: pulse.y }}
-          className="fixed w-20 h-20 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[9999] rounded-full border-2 border-blue-500/30"
-        />
-      ))}
-
-      {/* Audit Trail (Faint dots) */}
-      <AuditTrail mouseX={smoothX} mouseY={smoothY} />
-
-      {/* Main Spotlight Glow */}
-      <motion.div
-        style={{
-          left: smoothX,
-          top: smoothY,
-        }}
-        className="fixed w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[9998] opacity-30 mix-blend-soft-light rounded-full bg-gradient-radial from-blue-400/30 via-blue-400/5 to-transparent blur-3xl"
-      />
-
-      {/* Technical Scanner UI */}
-      <motion.div
-        style={{
-          left: smoothX,
-          top: smoothY,
-        }}
-        className="fixed pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
-      >
-        {/* Scanner Ring */}
-        <motion.div
-          animate={{
-            scale: hoverType ? 1.5 : 1,
-            rotate: hoverType ? 180 : 0
-          }}
-          className={`w-12 h-12 rounded-full border border-dashed transition-colors duration-500 ${
-            hoverType ? 'border-blue-500/50' : 'border-black/10'
-          }`}
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 rounded-full border-t-2 border-blue-500/20"
-          />
-        </motion.div>
-
-        {/* Data Readout */}
-        <div className="absolute top-0 left-full ml-4 flex flex-col gap-1 font-mono text-[8px] text-blue-500/60 uppercase tracking-tighter whitespace-nowrap">
-          <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 2 }}>
-            LAT: {smoothX.get().toFixed(0)}
-          </motion.div>
-          <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}>
-            LNG: {smoothY.get().toFixed(0)}
-          </motion.div>
-          <div className="text-blue-500/40">SIG: 0x{Math.floor(smoothX.get() * 1234).toString(16).slice(0, 4)}</div>
-        </div>
-      </motion.div>
-
-      {/* Trust Status Indicator */}
-      <AnimatePresence>
-        {hoverType && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: 30, y: 30 }}
-            animate={{ opacity: 1, scale: 1, x: 30, y: 30 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            style={{
-              left: smoothX,
-              top: smoothY,
-            }}
-            className="fixed pointer-events-none z-[9999] flex flex-col gap-1"
-          >
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-blue-500/20 shadow-2xl shadow-blue-500/10">
-              {isScanning ? (
-                <RefreshCw className="w-3 h-3 text-blue-500 animate-spin" />
-              ) : (
-                <ShieldCheck className="w-3 h-3 text-blue-500" />
-              )}
-              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">
-                {isScanning ? 'Scanning...' : hoverType.replace('_', ' ')}
-              </span>
-            </div>
-            {!isScanning && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="px-2 py-0.5 rounded bg-blue-500 text-[8px] text-white font-bold w-fit ml-4"
-              >
-                SCORE: 0.998
-              </motion.div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-};
-
-const AuditTrail = ({
-  mouseX,
-  mouseY,
-}: {
-  mouseX: ReturnType<typeof useMotionValue<number>>;
-  mouseY: ReturnType<typeof useMotionValue<number>>;
-}) => {
-  const [trail, setTrail] = useState<{ id: number; x: number; y: number }[]>([]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const id = Date.now();
-      setTrail(prev => [{ id, x: mouseX.get(), y: mouseY.get() }, ...prev].slice(0, 10));
-    }, 100);
-    return () => clearInterval(interval);
-  }, [mouseX, mouseY]);
-
-  return (
-    <>
-      {trail.map((point, i) => (
-        <motion.div
-          key={point.id}
-          initial={{ opacity: 0.2, scale: 1 }}
-          animate={{ opacity: 0, scale: 0.5 }}
-          transition={{ duration: 1 }}
-          style={{ left: point.x, top: point.y }}
-          className="fixed w-1 h-1 bg-blue-400 rounded-full pointer-events-none z-[9998]"
-        />
-      ))}
-    </>
-  );
-};
-
-const TrustGrid = () => {
-  const { isDark } = useDarkMode();
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  const gridColor = isDark ? 'rgba(255,255,255,0.3)' : '#000';
-  const gridColorFine = isDark ? '#fff' : '#000';
-
-  return (
-    <div className="fixed inset-0 -z-20 pointer-events-none overflow-hidden">
-      {/* Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.05]"
-        style={{
-          backgroundImage: `linear-gradient(${gridColor} 1px, transparent 1px), linear-gradient(90deg, ${gridColor} 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
-        }}
-      />
-
-      {/* Dynamic Trust Nodes */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <TrustNode key={i} index={i} mouseX={mouseX} mouseY={mouseY} />
-        ))}
+    <div className="transaction-frame" aria-label="Illustrative agent transaction">
+      <div className="transaction-topline">
+        <span>ILLUSTRATIVE TRANSACTION</span>
+        <span className="live-state">
+          <span className={isRunning ? 'pulse-dot is-running' : 'pulse-dot'} />
+          {isRunning ? stages[currentStage] : 'Ready to replay'}
+        </span>
       </div>
 
-      {/* Spotlight revealed grid */}
-      <motion.div
-        style={{
-          background: useTransform(
-            [mouseX, mouseY],
-            ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, rgba(59, 130, 246, 0.12), transparent 100%)`
-          ),
-        }}
-        className="absolute inset-0"
-      >
-        <div className="absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage: `linear-gradient(${gridColorFine} 1px, transparent 1px), linear-gradient(90deg, ${gridColorFine} 1px, transparent 1px)`,
-            backgroundSize: '20px 20px'
-          }}
-        />
-      </motion.div>
-    </div>
-  );
-};
-
-const TrustNode = ({
-  index,
-  mouseX,
-  mouseY,
-}: {
-  index: number;
-  mouseX: ReturnType<typeof useMotionValue<number>>;
-  mouseY: ReturnType<typeof useMotionValue<number>>;
-}) => {
-  const pos = {
-    x: (index * 37 + 11) % 100,
-    y: (index * 61 + 23) % 100,
-  };
-
-  const distance = useTransform([mouseX, mouseY], ([x, y]: number[]) => {
-    const dx = x - (pos.x / 100) * (typeof window !== 'undefined' ? window.innerWidth : 1000);
-    const dy = y - (pos.y / 100) * (typeof window !== 'undefined' ? window.innerHeight : 1000);
-    return Math.sqrt(dx * dx + dy * dy);
-  });
-
-  const opacity = useTransform(distance, [0, 300], [0.4, 0]);
-  const scale = useTransform(distance, [0, 300], [1.5, 0.5]);
-
-  return (
-    <motion.div
-      style={{
-        left: `${pos.x}%`,
-        top: `${pos.y}%`,
-        opacity,
-        scale,
-      }}
-      className="absolute w-1 h-1 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"
-    />
-  );
-};
-
-const BackgroundEffect = () => {
-  const { isDark } = useDarkMode();
-
-  return (
-    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-      <motion.div
-        animate={{ scale: [1, 1.1, 1], x: [0, 20, 0], y: [0, -20, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] transition-colors duration-1000 ${
-          isDark ? 'bg-blue-900/20' : 'bg-blue-100/30'
-        }`}
-      />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], x: [0, -30, 0], y: [0, 30, 0] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] transition-colors duration-1000 ${
-          isDark ? 'bg-purple-900/10' : 'bg-orange-50/40'
-        }`}
-      />
-    </div>
-  );
-};
-
-const Hero = ({ onScan }: { onScan: () => void }) => {
-  const { isDark } = useDarkMode();
-  const [isHovered, setIsHovered] = useState(false);
-  const [mode, setMode] = useState<'human' | 'agent'>('human');
-  const [copied, setCopied] = useState(false);
-  const [liveStats, setLiveStats] = useState<{ agentsIndexed: number; totalQueries: number } | null>(null);
-
-  useEffect(() => {
-    fetch('https://app.maiat.io/api/v1/stats')
-      .then(r => r.json())
-      .then(d => {
-        if (d?.agentsIndexed || d?.totalQueries) {
-          setLiveStats({ agentsIndexed: d.agentsIndexed ?? 0, totalQueries: d.totalQueries ?? 0 });
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText('GET /api/v1/agent/{address}');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <section className="relative pt-40 pb-24 px-6 text-center max-w-5xl mx-auto group/hero">
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest mb-8 relative z-10 ${
-          isDark ? 'bg-white/10 border-white/10 text-gray-300' : 'bg-black/5 border-black/5 text-black'
-        }`}
-      >
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-        Mainnet Live on Base
-      </motion.div>
-
-      <div
-        className="relative z-10"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="font-sans text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[0.95] text-balance cursor-default"
-        >
-          The trust layer for <br />
-          <span className={`bg-gradient-to-b ${isDark ? 'from-white to-gray-500' : 'from-black to-gray-700'} bg-clip-text text-transparent`}>agentic intelligence.</span>
-        </motion.h1>
-
-        {/* Interactive Floating Elements */}
-        <AnimatePresence>
-          {isHovered && (
-            <>
-              <motion.div
-                initial={{ opacity: 0, x: -50, rotate: -10 }}
-                animate={{ opacity: 1, x: -140, rotate: -5 }}
-                exit={{ opacity: 0, x: -50, rotate: -10 }}
-                className={`absolute top-0 left-0 hidden lg:flex items-center gap-2 backdrop-blur-md p-3 rounded-2xl border shadow-2xl shadow-blue-500/10 ${
-                  isDark ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white/20'
-                }`}
-              >
-                <div className="bg-blue-500/10 p-1.5 rounded-lg">
-                  <Fingerprint className="w-4 h-4 text-blue-500" />
-                </div>
-                <div className="text-left">
-                  <div className="text-[8px] font-bold uppercase tracking-tighter text-blue-500/60">Identity</div>
-                  <div className={`text-[10px] font-bold ${isDark ? 'text-blue-300' : 'text-blue-900'}`}>Verified</div>
-                </div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: 50, rotate: 10 }}
-                animate={{ opacity: 1, x: 140, rotate: 5 }}
-                exit={{ opacity: 0, x: 50, rotate: 10 }}
-                className={`absolute bottom-10 right-0 hidden lg:flex items-center gap-2 backdrop-blur-md p-3 rounded-2xl border shadow-2xl shadow-emerald-500/10 ${
-                  isDark ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white/20'
-                }`}
-              >
-                <div className="bg-emerald-500/10 p-1.5 rounded-lg">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                </div>
-                <div className="text-left">
-                  <div className="text-[8px] font-bold uppercase tracking-tighter text-emerald-500/60">Security</div>
-                  <div className={`text-[10px] font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-900'}`}>Proof Gen</div>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-      </div>
-
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed font-medium cursor-default relative z-10"
-      >
-        Verify AI agent behavioral trust scores on Base — powered by real-time Virtuals ACP job history and cryptographic proofs.
-      </motion.p>
-
-      {/* Human/Agent Toggle */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.25 }}
-        className="flex justify-center mb-10 relative z-10"
-      >
-        <div className="liquid-glass rounded-xl p-1 inline-flex gap-1 shadow-sm">
-          <button
-            onClick={() => setMode('human')}
-            className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
-              mode === 'human'
-                ? 'bg-[#1a1a2e] text-white shadow-md'
-                : `bg-transparent ${isDark ? 'text-gray-400 hover:bg-white/5' : 'text-[#5c5c6b] hover:bg-black/3'}`
-            }`}
-          >
-            <User size={16} />
-            I&apos;m a Human
-          </button>
-          <button
-            onClick={() => setMode('agent')}
-            className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
-              mode === 'agent'
-                ? 'bg-[#1a1a2e] text-white shadow-md'
-                : `bg-transparent ${isDark ? 'text-gray-400 hover:bg-white/5' : 'text-[#5c5c6b] hover:bg-black/3'}`
-            }`}
-          >
-            <Bot size={16} />
-            I&apos;m an Agent
-          </button>
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-        className="mb-24 relative z-10"
-      >
-        <AnimatePresence mode="wait">
-          {mode === 'human' ? (
-            <motion.div
-              key="human-cta"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between liquid-glass shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
-            >
-              <div>
-                <h3 className={`text-xl font-bold mb-6 text-center ${isDark ? 'text-white' : 'text-black'}`}>
-                  Verify Trust Before You Transact.
-                </h3>
-                <div className="relative mb-6 w-full max-w-md mx-auto">
-                  <div className="font-mono rounded-xl p-4 sm:p-5 text-[13px] sm:text-[14px] leading-relaxed text-center" style={{ background: 'var(--card-bg)', color: 'var(--text-secondary)' }}>
-                    Check any AI agent&apos;s behavioral trust score — powered by real Virtuals ACP job history on Base.
-                  </div>
-                </div>
-                <div className="space-y-4 font-medium text-left text-sm sm:text-base max-w-md mx-auto px-2 sm:px-6" style={{ color: 'var(--text-secondary)' }}>
-                  <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>1.</span> <span>Enter any EVM wallet address</span></div>
-                  <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>2.</span> <span>Get a trust score (0–100) and verdict</span></div>
-                  <div className="flex gap-3 items-start"><span className={`font-bold ${isDark ? 'text-white' : 'text-[#1a1a2e]'}`}>3.</span> <span>Decide whether to proceed, caution, or avoid</span></div>
-                </div>
-              </div>
-              <a
-                href="https://app.maiat.io"
-                className={`mt-8 group relative px-6 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all overflow-hidden active:scale-95 shadow-xl w-full max-w-md mx-auto no-underline ${
-                  isDark ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'
-                }`}
-              >
-                <span className="relative z-10">Launch App</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform relative z-10" />
-                <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              </a>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="agent-cta"
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              className="rounded-3xl p-6 sm:p-8 max-w-lg mx-auto sm:min-h-[420px] flex flex-col justify-between relative overflow-hidden liquid-glass shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
-            >
-              <div>
-                <div className="relative z-10 flex items-center justify-center gap-2 mb-6">
-                  <div className={`p-2 rounded-lg ${isDark ? 'bg-[#00D19D]/10' : 'bg-[#f0f9f6]'}`}>
-                    <Bot className="w-4 h-4 text-[#00D19D]" />
-                  </div>
-                  <h3 className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-black'}`}>
-                    Integrate Maiat Trust ⚖️
-                  </h3>
-                </div>
-
-                <div className="relative z-10 mb-6 w-full max-w-md mx-auto">
-                  <div className="rounded-xl p-4 sm:p-5 group/copy relative" style={{ background: 'var(--card-bg)' }}>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-center" style={{ color: 'var(--text-secondary)' }}>ADD TO YOUR AGENT</div>
-                    <div className="font-mono text-[13px] sm:text-[14px] leading-relaxed text-center text-[#00D19D] wrap-break-word">
-                      Read https://app.maiat.io/skill.md <br className="hidden sm:block" /> and follow the instructions
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative z-10 space-y-4 mb-6 text-sm sm:text-[15px] font-medium max-w-md mx-auto px-2" style={{ color: 'var(--text-secondary)' }}>
-                  <div className="flex gap-3 items-start">
-                    <span className="text-[#00D19D] font-bold mt-0.5">1</span>
-                    <span>Read the skill file above — it teaches your agent the Maiat API</span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <span className="text-[#00D19D] font-bold mt-0.5">2</span>
-                    <span>Query trust scores before any transaction or interaction</span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <span className="text-[#00D19D] font-bold mt-0.5">3</span>
-                    <span>Use the verdict to gate your agent&apos;s on-chain actions</span>
-                  </div>
-                </div>
-
-                <div className="relative z-10 rounded-xl p-4 sm:p-5 mb-6 max-w-md mx-auto text-center" style={{ background: 'var(--card-bg)' }}>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--text-secondary)' }}>QUICK API EXAMPLE</div>
-                  <div className="font-mono text-[12px] sm:text-[13px] leading-relaxed">
-                    <div className="text-[#00D19D] mb-1">
-                      GET /api/v1/agent/0x742d35Cc...
-                    </div>
-                    <div className="text-[#00D19D]">
-                      → {"{ trustScore: 85, verdict: \"proceed\" }"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative z-10 flex flex-col sm:flex-row gap-3 max-w-md mx-auto w-full">
-                <a href="https://app.maiat.io/docs" className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-lg no-underline ${
-                  isDark ? 'bg-white text-black shadow-white/10 hover:bg-gray-100' : 'bg-black text-white shadow-black/10 hover:bg-gray-900'
-                }`}>
-                  Read Full Docs <ArrowRight className="w-3.5 h-3.5" />
-                </a>
-                <div className={`flex-1 rounded-xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-[#f5f5f5]'}`}>
-                  <a href="https://app.maiat.io" className={`w-full h-full py-3.5 rounded-xl font-bold text-sm transition-colors block text-center no-underline ${
-                    isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-[#eaeaea]'
-                  }`} style={{lineHeight: '3.5rem'}}>
-                    Explore Agents
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto relative z-10">
-        {[
-          { label: 'Agents Indexed', value: liveStats ? liveStats.agentsIndexed.toLocaleString() : '—', sub: 'ACP verified', icon: <Cpu className="w-4 h-4" /> },
-          { label: 'Total Queries', value: liveStats ? liveStats.totalQueries.toLocaleString() : '—', sub: 'Trust lookups', icon: <Activity className="w-4 h-4" /> },
-          { label: 'Avg. Latency', value: '84ms', sub: 'Global Edge', icon: <Zap className="w-4 h-4" /> },
-        ].map((stat, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{
-              y: -10,
-              scale: 1.02,
-              backgroundColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.6)",
-              borderColor: isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.8)",
-              boxShadow: isDark ? "0 20px 40px rgba(0,0,0,0.3)" : "0 20px 40px rgba(0,0,0,0.05)"
-            }}
-            transition={{ delay: 0.4 + i * 0.1 }}
-            className={`p-8 rounded-[32px] shadow-sm text-left cursor-pointer group transition-colors hover-lift border ${
-              isDark ? 'bg-white/[0.03] border-white/[0.08]' : 'bg-white border-black/[0.08]'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors ${isDark ? 'text-gray-500 group-hover:text-white' : 'text-gray-400 group-hover:text-black'}`}>{stat.label}</div>
-              <div className="text-gray-300 group-hover:text-blue-500 transition-colors group-hover:scale-110 duration-300">{stat.icon}</div>
-            </div>
-            <div className="text-4xl font-sans font-black mb-2 tracking-tight">{stat.value}</div>
-            <div className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1">
-              <span className="w-1 h-1 rounded-full bg-emerald-500" />
-              {stat.sub}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-};
-
-const TrustFeed = () => {
-  const { isDark } = useDarkMode();
-  const [items, setItems] = useState([
-    { id: 'Agent-712', target: 'Agent-x9a', status: 'failed', score: 12, time: '2s ago' },
-    { id: 'Agent-b2c', target: 'Agent-k41', status: 'caution', score: 45, time: '5s ago' },
-    { id: 'Agent-e88', target: 'Agent-m12', status: 'verified', score: 91, time: '8s ago' },
-  ]);
-  const [isScanning, setIsScanning] = useState(false);
-
-  const addNewItem = () => {
-    setIsScanning(true);
-    setTimeout(() => {
-      const newId = `Agent-${Math.random().toString(36).substring(2, 5)}`;
-      const newTarget = `Agent-${Math.random().toString(36).substring(2, 5)}`;
-      const statuses = ['failed', 'caution', 'verified'];
-      const status = statuses[Math.floor(Math.random() * statuses.length)];
-      const score = status === 'failed' ? Math.floor(Math.random() * 20) : status === 'caution' ? 40 + Math.floor(Math.random() * 20) : 85 + Math.floor(Math.random() * 15);
-
-      setItems(prev => [{ id: newId, target: newTarget, status, score, time: 'Just now' }, ...prev.slice(0, 4)]);
-      setIsScanning(false);
-    }, 800);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(addNewItem, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8 }}
-      className="py-32 px-6 relative"
-    >
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+      <div className="budget-header">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/10 text-[10px] font-bold text-red-600 uppercase tracking-widest mb-6">
-            The Problem
-          </div>
-          <h2 className="font-sans text-5xl font-black mb-8 leading-tight tracking-tight">
-            Trust is the bottleneck of <br />
-            <span className="italic">autonomous agents.</span>
-          </h2>
-          <p className={`text-lg leading-relaxed mb-10 text-gray-400`}>
-            As AI agents begin to transact independently, the risk of unverified identity and malicious execution grows. Maiat provides a cryptographic trust score for every agent interaction.
-          </p>
-          <div className="grid grid-cols-2 gap-6">
-            <motion.div
-              whileHover={{ scale: 1.05, y: -5 }}
-              className="p-8 rounded-3xl liquid-glass shadow-xl"
-            >
-              <AlertCircle className="w-8 h-8 text-red-500 mb-5" />
-              <h4 className="font-bold text-lg mb-3">Identity Spoofing</h4>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Agents mimicking trusted entities to drain liquidity and exploit protocols.</p>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05, y: -5 }}
-              className="p-8 rounded-3xl liquid-glass shadow-xl"
-            >
-              <XCircle className="w-8 h-8 text-orange-500 mb-5" />
-              <h4 className="font-bold text-lg mb-3">Execution Failure</h4>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Unreliable agents failing critical cross-chain tasks or deviating from objectives.</p>
-            </motion.div>
-          </div>
+          <span className="mono-label">PARENT AUTHORITY</span>
+          <strong>Research Agent</strong>
         </div>
-
-        <div className="relative">
-          <div className={`absolute inset-0 blur-3xl -z-10 ${isDark ? 'bg-linear-to-b from-transparent via-white/3 to-transparent' : 'bg-linear-to-b from-transparent via-black/5 to-transparent'}`} />
-          <div className="liquid-glass rounded-[40px] p-8 overflow-hidden">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-2">
-                <Activity className={`w-4 h-4 ${isScanning ? 'text-blue-500 animate-spin' : 'text-emerald-500'}`} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  {isScanning ? 'Scanning Network...' : 'Live Trust Feed'}
-                </span>
-              </div>
-              <button
-                onClick={addNewItem}
-                disabled={isScanning}
-                className={`p-2 rounded-full transition-colors disabled:opacity-50 ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
-              >
-                <RefreshCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <AnimatePresence mode="popLayout">
-                {items.map((item, i) => (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="p-4 rounded-2xl liquid-glass shadow-sm flex items-center justify-between group transition-all cursor-pointer hover:border-white/20"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-2 h-2 rounded-full ${
-                        item.status === 'verified' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
-                        item.status === 'caution' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' :
-                        'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                      }`} />
-                      <div>
-                        <div className="font-mono text-[10px] font-bold flex items-center gap-2">
-                          {item.id} <ChevronRight className={`w-3 h-3 group-hover:translate-x-1 transition-transform ${isDark ? 'text-gray-600' : 'text-gray-300'}`} /> {item.target}
-                        </div>
-                        <div className={`text-[10px] font-medium uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{item.status}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-sm font-bold ${
-                        item.status === 'verified' ? 'text-emerald-600' :
-                        item.status === 'caution' ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {item.score}/100
-                      </div>
-                      <div className={`text-[8px] font-bold uppercase ${isDark ? 'text-gray-600' : 'text-gray-300'}`}>{item.time}</div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </div>
+        <div className="budget-value">
+          <span>Budget</span>
+          <strong>$20.00</strong>
         </div>
       </div>
-    </motion.section>
-  );
-};
 
-const BentoFeatures = () => {
-  const { isDark } = useDarkMode();
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+      <div className="stage-track" aria-label={`Current stage: ${stages[currentStage]}`}>
+        {stages.map((stage, index) => (
+          <span
+            className={index <= currentStage ? 'stage-node is-complete' : 'stage-node'}
+            key={stage}
+          >
+            <i />
+            <b>{stage}</b>
+          </span>
+        ))}
+      </div>
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const { left, top } = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - left);
-    mouseY.set(e.clientY - top);
-  };
+      <div className="agent-list" aria-label="Delegated agent tasks">
+        {agents.map((agent, index) => {
+          const verdict = evaluated ? agent.verdict : 'PENDING';
+          const settlement = reconciled ? agent.settlement : currentStage >= 1 ? 'Reserved' : 'Waiting';
+          return (
+            <button
+              className={selectedAgent === index ? 'agent-row is-selected' : 'agent-row'}
+              type="button"
+              key={agent.id}
+              onClick={() => onSelectAgent(index)}
+              aria-pressed={selectedAgent === index}
+            >
+              <span className="agent-identity">
+                <span className={`verdict-dot verdict-${verdict.toLowerCase()}`} />
+                <span>
+                  <strong>{agent.name}</strong>
+                  <small>{settlement}</small>
+                </span>
+              </span>
+              <span className={`verdict verdict-${verdict.toLowerCase()}`}>{verdict}</span>
+              <strong className="agent-amount">{agent.amount}</strong>
+            </button>
+          );
+        })}
+      </div>
 
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8 }}
-      onMouseMove={handleMouseMove}
-      className="py-32 px-6 max-w-7xl mx-auto relative group/bento"
-    >
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-        <div className="max-w-xl">
-          <h2 className="font-sans text-5xl font-black mb-6 tracking-tight">Built for the <br />machine-to-machine era.</h2>
-          <p className={"text-gray-400"}>A modular protocol designed for high-frequency agent interactions.</p>
+      <div className="agent-detail" aria-live="polite">
+        <span>{selected.name}</span>
+        <p>{selected.detail}</p>
+      </div>
+
+      <div className="transaction-summary">
+        <div>
+          <span>Captured</span>
+          <strong>{reconciled ? '$2.00' : 'Pending'}</strong>
         </div>
-        <button className={`text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all group ${isDark ? 'text-gray-300' : 'text-black'}`}>
-          Explore Ecosystem <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        <div>
+          <span>Open reservation</span>
+          <strong>{reconciled ? '$3.00' : 'Pending'}</strong>
+        </div>
+        <div>
+          <span>Released</span>
+          <strong>{reconciled ? '$1.00' : 'Pending'}</strong>
+        </div>
+        <div className="available-row">
+          <span>Available</span>
+          <strong>{reconciled ? '$15.00' : '$14.00'}</strong>
+        </div>
+      </div>
+
+      <div className="receipt-strip">
+        <div>
+          <span className="mono-label">RECEIPT</span>
+          <strong>{currentStage >= 5 ? 'demo_01' : 'pending'}</strong>
+        </div>
+        <div>
+          <span className="mono-label">EXTERNAL FINALITY</span>
+          <strong>simulated</strong>
+        </div>
+        <button className="replay-button" type="button" onClick={onRun} disabled={isRunning}>
+          {isRunning ? 'Running' : 'Replay flow'}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-6 grid-rows-2 gap-4 h-auto md:h-[600px] relative">
-        <motion.div
-          whileHover={{ y: -5, scale: 1.01 }}
-          className="md:col-span-3 liquid-glass rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative"
-        >
-          <motion.div
-            style={{
-              background: useTransform(
-                [mouseX, mouseY],
-                ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, rgba(16, 185, 129, 0.08), transparent 80%)`
-              ),
-            }}
-            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
-          />
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all group-hover:rotate-12 relative z-10 ${
-            isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50'
-          }`}>
-            <Zap className="w-6 h-6" />
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-3">Lightning Fast Oracle</h3>
-            <p className={`text-sm leading-relaxed text-gray-400`}>Sub-100ms response times globally, built for high-frequency agent interactions and real-time decision making.</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ y: -5, scale: 1.01 }}
-          className="md:col-span-3 bg-black text-white rounded-[32px] p-8 flex flex-col justify-between overflow-hidden relative group cursor-pointer"
-        >
-          <motion.div
-            style={{
-              background: useTransform(
-                [mouseX, mouseY],
-                ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, rgba(255, 255, 255, 0.1), transparent 80%)`
-              ),
-            }}
-            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
-          />
-          <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all">
-            <Shield className="w-32 h-32" />
-          </div>
-          <div className="bg-white/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all relative z-10">
-            <Lock className="w-6 h-6" />
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-3">On-chain Verifiability</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">TrustScoreOracle deployed on Base. Any smart contract can query trust scores directly on-chain. Fully verifiable.</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ y: -5, scale: 1.01 }}
-          className="md:col-span-2 liquid-glass rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
-        >
-          <motion.div
-            style={{
-              background: useTransform(
-                [mouseX, mouseY],
-                ([x, y]) => `radial-gradient(300px circle at ${x}px ${y}px, rgba(59, 130, 246, 0.08), transparent 80%)`
-              ),
-            }}
-            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
-          />
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all group-hover:-rotate-12 relative z-10 ${
-            isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50'
-          }`}>
-            <Terminal className="w-6 h-6" />
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-xl font-bold mb-2">Open API</h3>
-            <p className={`text-xs text-gray-400`}>Free, keyless API. Query any agent&apos;s trust score in under 100ms.</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ y: -5, scale: 1.01 }}
-          className="md:col-span-4 liquid-glass rounded-[32px] p-8 flex items-center gap-8 group cursor-pointer relative overflow-hidden"
-        >
-          <motion.div
-            style={{
-              background: useTransform(
-                [mouseX, mouseY],
-                ([x, y]) => `radial-gradient(500px circle at ${x}px ${y}px, rgba(0, 0, 0, 0.03), transparent 80%)`
-              ),
-            }}
-            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
-          />
-          <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 shadow-sm group-hover:rotate-6 transition-transform relative z-10 ${
-            isDark ? 'bg-white/10' : 'bg-white'
-          }`}>
-            <Anchor className="w-10 h-10" />
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-2">Uniswap v4 Hook</h3>
-            <p className={`text-sm leading-relaxed text-gray-400`}>TrustGateHook blocks untrusted agents from pool access. The first trust-gated DeFi primitive.</p>
-          </div>
-        </motion.div>
-      </div>
-    </motion.section>
-  );
-};
-
-const Partners = () => {
-  const { isDark } = useDarkMode();
-  return (
-    <section className={`py-32 px-6 text-center border-t ${isDark ? 'border-white/10' : 'border-black/5'}`}>
-      <div className={`text-[10px] font-bold uppercase tracking-[0.3em] mb-16 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>INTEGRATED WITH</div>
-      <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-40 hover:opacity-100 transition-all">
-        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-          <img src="/icons/virtuals.png" alt="Virtuals" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-sans font-black tracking-tight">Virtuals Protocol</span>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-          <img src="/icons/uniswap.png" alt="Uniswap" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-sans font-black tracking-tight">Uniswap</span>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-          <img src="/icons/base.png" alt="Base" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-sans font-black tracking-tight">Base</span>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-          <img src="/icons/gmgn.png" alt="GMGN" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-sans font-black tracking-tight">GMGN</span>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.1, filter: "grayscale(0)" }} className="flex items-center gap-4 cursor-pointer">
-          <img src="/icons/moonpay.png" alt="MoonPay" className="w-12 h-12 rounded-full" />
-          <span className="text-2xl font-sans font-black tracking-tight">MoonPay</span>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-const Footer = () => {
-  const { isDark } = useDarkMode();
-  return (
-    <footer className="pt-32 pb-12 px-8 border-t" style={{ borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', background: isDark ? '#0A0A0A' : 'linear-gradient(180deg, #ffffff 0%, #f5f0e8 100%)' }}>
-      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-16 mb-32">
-        <div className="col-span-2">
-          <div className="flex items-center gap-3 mb-8">
-            <img src="/maiat-logo.jpg" alt="Maiat" className="w-9 h-9 rounded-full" />
-            <span className={`font-sans font-semibold text-xl tracking-wide ${isDark ? 'text-white' : 'text-black'}`}>maiat</span>
-          </div>
-          <p className="mb-8 max-w-xs leading-relaxed text-gray-400">
-            Trust infrastructure for agent economy.
-          </p>
-          <div className="flex items-center gap-3">
-            <a href="https://twitter.com/0xmaiat" target="_blank" rel="noopener noreferrer" className={`p-2 rounded-lg border transition-opacity hover:opacity-70 ${isDark ? 'border-white/10 text-gray-400' : 'border-black/10 text-gray-500'}`}>
-              <Twitter className="w-4 h-4" />
-            </a>
-            <a href="https://github.com/JhiNResH/maiat-protocol" target="_blank" rel="noopener noreferrer" className={`p-2 rounded-lg border transition-opacity hover:opacity-70 ${isDark ? 'border-white/10 text-gray-400' : 'border-black/10 text-gray-500'}`}>
-              <Github className="w-4 h-4" />
-            </a>
-          </div>
-        </div>
-        <div>
-          <h4 className={`text-[11px] font-bold uppercase tracking-[3px] mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Product</h4>
-          <ul className="space-y-4 text-sm font-medium text-gray-400">
-            <li><a href="https://github.com/JhiNResH/maiat-protocol/tree/master/packages/guard" target="_blank" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Maiat Guard</a></li>
-            <li><a href="https://app.maiat.io/docs" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Maiat ACP</a></li>
-            <li><a href="https://app.maiat.io/skill.md" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>skill.md</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className={`text-[11px] font-bold uppercase tracking-[3px] mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Developers</h4>
-          <ul className="space-y-4 text-sm font-medium text-gray-400">
-            <li><a href="https://app.maiat.io/docs" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Documentation</a></li>
-            <li><a href="https://github.com/JhiNResH/maiat-protocol" target="_blank" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>GitHub</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className={`text-[11px] font-bold uppercase tracking-[3px] mb-8 ${isDark ? 'text-white' : 'text-black'}`}>Get Started</h4>
-          <p className="text-sm leading-relaxed text-gray-400 mb-6">
-            Register your agent and start building trust on-chain.
-          </p>
-          <a href="https://passport.maiat.io" target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-medium text-white bg-black transition-opacity hover:opacity-90 mb-3 w-full">
-            Register Agent
-          </a>
-          <a href="https://app.maiat.io/docs" target="_blank" rel="noopener noreferrer"
-            className={`inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-medium border transition-opacity hover:opacity-70 w-full ${isDark ? 'text-white border-white/20 bg-white/5' : 'text-black border-black/10 bg-white'}`}>
-            View Docs
-          </a>
-        </div>
-      </div>
-      <div className={`max-w-7xl mx-auto pt-12 border-t flex flex-col md:flex-row items-center justify-between text-[10px] font-bold uppercase tracking-widest gap-6 ${
-        isDark ? 'border-white/10 text-gray-600' : 'border-black/5 text-gray-400'
-      }`}>
-        <p>© 2026 Maiat Protocol. All rights reserved.</p>
-        <div className="flex items-center gap-4">
-          <span>MIT License</span>
-          <a href="https://github.com/JhiNResH/maiat-protocol" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
-            <Github className="w-4 h-4" />
-          </a>
-        </div>
-      </div>
-    </footer>
-  );
-};
-
-// --- App Transition Overlay ---
-const AppTransition = ({ isActive, onComplete }: { isActive: boolean; onComplete: () => void }) => {
-  const { isDark } = useDarkMode();
-  return (
-    <AnimatePresence>
-      {isActive && (
-        <motion.div
-          className={`fixed inset-0 z-[9999] flex items-center justify-center ${isDark ? 'bg-[#0A0A0A]' : 'bg-white'}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          onAnimationComplete={onComplete}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="text-center flex flex-col items-center"
-          >
-            <motion.div
-              className={`w-8 h-8 rounded-full border-2 ${isDark ? 'border-white/20 border-t-white' : 'border-black/10 border-t-black'}`}
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-            />
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className={`mt-4 text-[10px] font-bold tracking-[0.2em] uppercase ${isDark ? 'text-white/40' : 'text-black/30'}`}
-            >
-              maiat.io
-            </motion.p>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
-function LandingPageInner() {
-  const { isDark } = useDarkMode();
-  const { scrollYProgress } = useScroll();
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState<null | { score: number; status: string }>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Apply dark class to html element for CSS variable switching
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  // Intercept all app.maiat.io links for smooth transition
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      const link = (e.target as HTMLElement).closest('a[href*="app.maiat.io"]');
-      if (link && !isTransitioning) {
-        e.preventDefault();
-        setIsTransitioning(true);
-        setTimeout(() => { window.location.href = (link as HTMLAnchorElement).href; }, 1000);
-      }
-    };
-    document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
-  }, [isTransitioning]);
-
-  const startScan = () => {
-    setIsScanning(true);
-    setScanResult(null);
-    setTimeout(() => {
-      setIsScanning(false);
-      setScanResult({ score: 94, status: 'Highly Trusted' });
-    }, 2000);
-  };
-
-  return (
-    <div className={`min-h-screen transition-colors duration-700 selection:bg-black selection:text-white relative atmosphere`} style={{ background: 'var(--bg-color)', color: 'var(--text-color)' }}>
-      <AppTransition isActive={isTransitioning} onComplete={() => {}} />
-      <motion.div
-        className={`fixed top-0 left-0 right-0 h-1 origin-left z-100 ${isDark ? 'bg-white' : 'bg-black'}`}
-        style={{ scaleX: scrollYProgress }}
-      />
-
-      <BackgroundEffect />
-      <TrustGrid />
-      <CursorSpotlight />
-      <Navbar />
-      <Hero onScan={startScan} />
-      <TrustFeed />
-      <BentoFeatures />
-      <Partners />
-      <Footer />
-
-      <AnimatePresence>
-        {isScanning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={`fixed inset-0 z-110 flex items-center justify-center backdrop-blur-md ${isDark ? 'bg-black/80' : 'bg-white/80'}`}
-          >
-            <div className="text-center">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className={`w-20 h-20 border-4 border-t-transparent rounded-full mx-auto mb-8 ${isDark ? 'border-white' : 'border-black'}`}
-              />
-              <h3 className="text-2xl font-sans font-black mb-2 tracking-tight">Analyzing Agent Behavior</h3>
-              <p className={`font-mono text-sm text-gray-400`}>Fetching Virtuals ACP job history...</p>
-            </div>
-          </motion.div>
-        )}
-
-        {scanResult && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed inset-0 z-110 flex items-center justify-center p-6"
-          >
-            <div
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-              onClick={() => setScanResult(null)}
-            />
-            <div className={`rounded-[40px] p-12 max-w-md w-full shadow-2xl relative z-10 border ${
-              isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-white border-black/5'
-            }`}>
-              <button
-                onClick={() => setScanResult(null)}
-                className={`absolute top-6 right-6 p-2 rounded-full transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
-              >
-                <XCircle className="w-6 h-6" />
-              </button>
-              <div className="text-center">
-                <div className="w-24 h-24 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-6">
-                  <ShieldCheck className="w-12 h-12 text-emerald-500" />
-                </div>
-                <h3 className="text-3xl font-sans font-black mb-2 tracking-tight">Verification Complete</h3>
-                <div className="text-6xl font-sans font-black text-emerald-600 mb-4 tracking-tight">{scanResult.score}</div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-sm mb-8">
-                  {scanResult.status}
-                </div>
-                <p className={`text-sm leading-relaxed mb-8 text-gray-400`}>
-                  This agent has a consistent history of successful job execution and verified identity on Base.
-                </p>
-                <button
-                  onClick={() => setScanResult(null)}
-                  className={`w-full py-4 rounded-2xl font-bold transition-all ${
-                    isDark ? 'bg-white text-black hover:bg-gray-100' : 'bg-black text-white hover:bg-gray-900'
-                  }`}
-                >
-                  Close Report
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <p className="transaction-note">
+        Illustrative authorization-capable rail. Direct irreversible payments use pay → evaluate → receipt.
+      </p>
     </div>
   );
 }
 
-export default function LandingPage() {
+function TaskTree() {
   return (
-    <DarkModeProvider>
-      <LandingPageInner />
-    </DarkModeProvider>
+    <div className="task-tree" aria-label="Shared ancestor budget task tree">
+      <div className="tree-parent">
+        <span className="tree-kicker">SHARED ANCESTOR LIMIT</span>
+        <div>
+          <strong>Parent Research Agent</strong>
+          <b>$20.00</b>
+        </div>
+        <span className="budget-bar">
+          <i style={{width: '30%'}} />
+        </span>
+        <small>$6 reserved across descendants · $14 not yet reserved</small>
+      </div>
+
+      <div className="tree-connector" aria-hidden="true">
+        <span />
+      </div>
+
+      <div className="tree-children">
+        {agents.map((agent) => (
+          <div className="tree-child" key={agent.id}>
+            <span className={`tree-status verdict-${agent.verdict.toLowerCase()}`}>{agent.verdict}</span>
+            <strong>{agent.name}</strong>
+            <div>
+              <span>Reserved</span>
+              <b>{agent.amount}</b>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="blocked-retry">
+        <span>RETRY 02</span>
+        <strong>Blocked before spend</strong>
+        <small>Ancestor-aware reservation sees the same shared limit.</small>
+      </div>
+    </div>
+  );
+}
+
+function ArchitectureLoop() {
+  return (
+    <div className="architecture-loop">
+      <div className="loop-center" aria-hidden="true">
+        <span>CLOSED</span>
+        <strong>LOOP</strong>
+      </div>
+      {modules.map((item) => {
+        return (
+          <article className="module" key={item.name}>
+            <div className="module-heading">
+              <span>{item.number}</span>
+            </div>
+            <h3>{item.name}</h3>
+            <p>{item.description}</p>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function Home() {
+  const reduceMotion = useReducedMotion();
+  const [currentStage, setCurrentStage] = useState(stages.length - 1);
+  const [isRunning, setIsRunning] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState(0);
+
+  useEffect(() => {
+    if (!isRunning) return;
+
+    if (reduceMotion || currentStage >= stages.length - 1) return;
+
+    const timer = window.setTimeout(() => {
+      const nextStage = currentStage + 1;
+      setCurrentStage(nextStage);
+      if (nextStage === stages.length - 1) setIsRunning(false);
+    }, 620);
+
+    return () => window.clearTimeout(timer);
+  }, [currentStage, isRunning, reduceMotion]);
+
+  const runDemo = () => {
+    setSelectedAgent(0);
+    if (reduceMotion) {
+      setCurrentStage(stages.length - 1);
+      setIsRunning(false);
+    } else {
+      setCurrentStage(0);
+      setIsRunning(true);
+    }
+  };
+
+  const inspectStage = (index: number) => {
+    setIsRunning(false);
+    setCurrentStage(index);
+  };
+
+  return (
+    <div id="top">
+      <Header />
+
+      <main>
+        <section className="hero shell" id="control">
+          <div className="hero-copy hero-enter">
+            <h1>
+              Financial control for
+              <br />
+              autonomous teams.
+            </h1>
+            <p className="hero-subcopy">
+              Bound every agent&apos;s budget, reconcile every payment, and trace each spend to the task and
+              accepted work.
+            </p>
+            <div className="hero-actions">
+              <a className="button button-orange" href="#demo">
+                View demo
+              </a>
+              <a
+                className="button button-outline"
+                href="https://x.com/0xmaiat"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Join pilot
+              </a>
+            </div>
+          </div>
+
+          <div className="hero-product hero-enter-delayed">
+            <TransactionPanel
+              currentStage={currentStage}
+              isRunning={isRunning}
+              onRun={runDemo}
+              selectedAgent={selectedAgent}
+              onSelectAgent={setSelectedAgent}
+            />
+          </div>
+        </section>
+
+        <section className="section section-rule shell">
+          <div className="section-heading problem-heading">
+            <h2>A wallet cap is not a task-tree budget.</h2>
+            <p>
+              When one agent delegates to many, retries, crashes, duplicate callbacks, and late settlements
+              can all spend against the same limit.
+            </p>
+          </div>
+
+          <div className="problem-layout">
+            <TaskTree />
+            <ol className="problem-notes">
+              <li>
+                <span>01</span>
+                <div>
+                  <strong>Shared budget</strong>
+                  <p>Every child draws against the same ancestor limits.</p>
+                </div>
+              </li>
+              <li>
+                <span>02</span>
+                <div>
+                  <strong>External uncertainty</strong>
+                  <p>A timeout is not a failed payment. Unknown states must be quarantined and reconciled.</p>
+                </div>
+              </li>
+              <li>
+                <span>03</span>
+                <div>
+                  <strong>Missing accountability</strong>
+                  <p>Payment logs rarely explain which authority, task, artifact, or accepted result caused the spend.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <section className="section demo-section" id="demo">
+          <div className="shell">
+            <div className="section-heading demo-heading">
+              <h2>One budget. Three agents. One accountable closeout.</h2>
+              <p>
+                A research agent receives a $20 work budget. Maiat reserves across the full authority tree,
+                then links every verdict to the next payment action.
+              </p>
+            </div>
+
+            <div className="demo-grid">
+              <div className="flow-inspector">
+                <div className="flow-tabs" role="tablist" aria-label="Transaction stages">
+                  {stages.map((stage, index) => (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={currentStage === index}
+                      className={currentStage === index ? 'flow-tab is-current' : 'flow-tab'}
+                      onClick={() => inspectStage(index)}
+                      key={stage}
+                    >
+                      <span>{String(index + 1).padStart(2, '0')}</span>
+                      {stage}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flow-copy" aria-live="polite">
+                  <span className="mono-label">NOW INSPECTING · {stages[currentStage].toUpperCase()}</span>
+                  {currentStage === 0 && (
+                    <>
+                      <h3>Delegate bounded authority.</h3>
+                      <p>The parent can create child tasks, but it cannot create more economic authority than it received.</p>
+                    </>
+                  )}
+                  {currentStage === 1 && (
+                    <>
+                      <h3>Reserve through every ancestor.</h3>
+                      <p>$2, $3, and $1 are reserved before execution. A retry sees the same shared limit.</p>
+                    </>
+                  )}
+                  {currentStage === 2 && (
+                    <>
+                      <h3>Execute against one work order.</h3>
+                      <p>Each child task carries its authority path, idempotency key, expected artifact, and payment intent.</p>
+                    </>
+                  )}
+                  {currentStage === 3 && (
+                    <>
+                      <h3>Evaluate the committed evidence.</h3>
+                      <p>Search passes, extraction needs revision, and verification fails under the declared evaluator policy.</p>
+                    </>
+                  )}
+                  {currentStage === 4 && (
+                    <>
+                      <h3>Reconcile observed rail state.</h3>
+                      <p>Capture $2, keep $3 reserved, and release $1. Unknown external states are quarantined, not retried blindly.</p>
+                    </>
+                  )}
+                  {currentStage === 5 && (
+                    <>
+                      <h3>Close with one work receipt.</h3>
+                      <p>The receipt links authority, task, artifact, verdict, cost, and observed external settlement state.</p>
+                    </>
+                  )}
+                </div>
+
+                <button className="button button-dark run-button" type="button" onClick={runDemo} disabled={isRunning}>
+                  {isRunning ? 'Running control flow' : 'Run the full sequence'}
+                </button>
+              </div>
+
+              <div className="work-receipt">
+                <div className="receipt-header">
+                  <div>
+                    <BrandMark />
+                    <span>WORK RECEIPT</span>
+                  </div>
+                  <span className="receipt-id">demo_01</span>
+                </div>
+                <div className="receipt-state">
+                  <span>LOCAL STATE</span>
+                  <strong>{currentStage >= 5 ? 'CLOSED' : stages[currentStage].toUpperCase()}</strong>
+                </div>
+                <dl>
+                  <div>
+                    <dt>Authority</dt>
+                    <dd>parent/research/*</dd>
+                  </div>
+                  <div>
+                    <dt>Budget</dt>
+                    <dd>$20.00</dd>
+                  </div>
+                  <div>
+                    <dt>Reserved</dt>
+                    <dd>{currentStage >= 1 ? '$6.00' : '$0.00'}</dd>
+                  </div>
+                  <div>
+                    <dt>Captured</dt>
+                    <dd>{currentStage >= 4 ? '$2.00' : 'Pending'}</dd>
+                  </div>
+                  <div>
+                    <dt>Open</dt>
+                    <dd>{currentStage >= 4 ? '$3.00' : 'Pending'}</dd>
+                  </div>
+                  <div>
+                    <dt>Released</dt>
+                    <dd>{currentStage >= 4 ? '$1.00' : 'Pending'}</dd>
+                  </div>
+                  <div>
+                    <dt>External finality</dt>
+                    <dd>simulated</dd>
+                  </div>
+                </dl>
+                <div className="receipt-verdicts">
+                  {agents.map((agent) => (
+                    <span key={agent.id}>
+                      <i className={`verdict-${currentStage >= 3 ? agent.verdict.toLowerCase() : 'pending'}`} />
+                      {agent.name.replace(' Agent', '')}
+                      <b>{currentStage >= 3 ? agent.verdict : 'PENDING'}</b>
+                    </span>
+                  ))}
+                </div>
+                <p>Illustrative only · Adapter finality is simulated · No customer funds are held by Maiat</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-rule shell" id="architecture">
+          <div className="section-heading architecture-heading">
+            <h2>Four modules. One closed loop.</h2>
+            <p>
+              Authority becomes reservation. Work becomes a verdict. External payment state returns as a
+              finance-readable receipt.
+            </p>
+          </div>
+
+          <ArchitectureLoop />
+
+          <div className="rail-boundary">
+            <div>
+              <h3>Control above the rails.</h3>
+              <p>
+                Maiat does not hold customer funds, issue cards, or replace payment providers. It provides one
+                policy, reservation, reconciliation, and receipt model for connected rails.
+              </p>
+            </div>
+            <div className="adapter-targets">
+              <span className="mono-label">ADAPTER TARGETS · NOT LIVE INTEGRATIONS</span>
+              <div>
+                <span>x402</span>
+                <span>API credits</span>
+                <span>Wallets</span>
+                <span>Card authorizations</span>
+                <span>Invoices</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section audience-section">
+          <div className="shell">
+            <div className="section-heading audience-heading">
+              <h2>One transaction truth for everyone who owns the risk.</h2>
+            </div>
+            <div className="audience-list">
+              <article>
+                <span>01</span>
+                <h3>Agent platforms</h3>
+                <p>Add paid agent workflows without rebuilding budget and recovery logic inside every runtime.</p>
+              </article>
+              <article>
+                <span>02</span>
+                <h3>Finance and FinOps</h3>
+                <p>Trace each spend to its authorizer, work order, accepted result, and external payment state.</p>
+              </article>
+              <article>
+                <span>03</span>
+                <h3>Security and reliability</h3>
+                <p>Stop new descendant spend after revocation and quarantine uncertain payments instead of silently retrying.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="section benchmark-section shell" id="benchmark">
+          <div className="benchmark-copy">
+            <h2>Proof before production.</h2>
+            <p>
+              The first public proof will test the failures that simple demos avoid: concurrency, duplicate
+              callbacks, crashes, revocation, late settlement, refunds, and reversals.
+            </p>
+            <p className="benchmark-truth">
+              This page shows the control model. The implementation benchmark has not been run yet.
+            </p>
+          </div>
+
+          <div className="benchmark-receipt">
+            <div className="benchmark-header">
+              <div>
+                <BrandMark />
+                <span>BENCHMARK TARGETS</span>
+              </div>
+              <b>NOT CURRENT RESULTS</b>
+            </div>
+            <div className="benchmark-meta">
+              <span>suite</span>
+              <strong>ledger_failure_matrix_v0</strong>
+              <span>status</span>
+              <strong>SPEC TARGET</strong>
+            </div>
+            <ul>
+              {benchmarkTargets.map((target, index) => (
+                <li key={target}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <strong>{target}</strong>
+                  <b>PLANNED</b>
+                </li>
+              ))}
+            </ul>
+            <div className="benchmark-footer">
+              <span>Result hash</span>
+              <strong>Awaiting implementation</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="final-cta">
+          <div className="shell final-cta-inner">
+            <div>
+              <h2>Do your agents already spend across two rails?</h2>
+              <p>
+                Bring one real paid workflow. We&apos;ll map its authority tree, failure states, and
+                finance-readable receipt.
+              </p>
+            </div>
+            <div className="final-actions">
+              <a
+                className="button button-orange"
+                href="https://x.com/0xmaiat"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Join pilot
+              </a>
+              <span>No custody. No card issuing. No new payment rail.</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div className="shell footer-inner">
+          <a className="brand" href="#top" aria-label="Maiat home">
+            <BrandMark />
+            <span>MAIAT</span>
+          </a>
+          <p>Agent Spend Control Plane · In development</p>
+          <div>
+            <a href="https://github.com/JhiNResH/maiat-protocol" target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+            <a href="https://x.com/0xmaiat" target="_blank" rel="noreferrer">
+              X / Twitter
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
